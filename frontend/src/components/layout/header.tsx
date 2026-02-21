@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { Menu, Bell, ChevronRight, User, LogOut } from 'lucide-react';
+import { Menu, Bell, ChevronRight, User, LogOut, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/stores/auth-store';
 import { useUIStore } from '@/stores/ui-store';
@@ -81,10 +81,13 @@ function UserDropdown() {
             className="h-8 w-8 rounded-full object-cover"
           />
         ) : (
-          <div className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center text-sm font-medium">
+          <div className="h-8 w-8 rounded-full bg-teal-600 text-white flex items-center justify-center text-sm font-medium">
             {initials}
           </div>
         )}
+        <span className="hidden sm:block text-sm font-medium text-slate-700">
+          {user?.first_name}
+        </span>
       </button>
 
       {open && (
@@ -137,13 +140,21 @@ export function Header() {
       </div>
 
       <div className="flex items-center gap-2">
+        {/* Search */}
+        <button
+          className="p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors"
+          aria-label="Search"
+        >
+          <Search className="h-5 w-5" />
+        </button>
+
         {/* Notification bell */}
         <button
           className="relative p-2 rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-colors"
           aria-label="Notifications"
         >
           <Bell className="h-5 w-5" />
-          {/* Unread indicator — wired to API in Phase 8 */}
+          <span className="absolute top-1.5 right-1.5 h-2 w-2 bg-red-500 rounded-full" />
         </button>
 
         {/* User dropdown */}

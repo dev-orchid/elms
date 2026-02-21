@@ -4,6 +4,7 @@ import type { RegisterInput, LoginInput, UpdateProfileInput } from './auth.valid
 
 export class AuthService {
   async register(input: RegisterInput) {
+    // Create auth user (without relying on DB trigger for profile)
     const { data: authData, error: authError } = await supabase.auth.admin.createUser({
       email: input.email,
       password: input.password,
@@ -21,17 +22,18 @@ export class AuthService {
       throw new AppError(authError.message, 400);
     }
 
-    // Update profile with names (trigger creates the row, we update it)
+    // Create profile row directly (upsert in case trigger also fires)
     const { error: profileError } = await supabase
       .from('profiles')
-      .update({
+      .upsert({
+        id: authData.user.id,
+        email: input.email,
         first_name: input.first_name,
         last_name: input.last_name,
-      })
-      .eq('id', authData.user.id);
+      }, { onConflict: 'id' });
 
     if (profileError) {
-      console.error('Failed to update profile:', profileError.message);
+      console.error('Failed to create profile:', profileError.message);
     }
 
     // Fetch the full profile

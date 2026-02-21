@@ -1,5 +1,12 @@
-import 'dotenv/config';
+import { config } from 'dotenv';
+import { resolve, dirname } from 'path';
+import { fileURLToPath } from 'url';
 import { z } from 'zod';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+// Load .env from monorepo root (two levels up from src/config/)
+config({ path: resolve(__dirname, '../../../.env') });
 
 const envSchema = z.object({
   PORT: z.coerce.number().default(4000),
