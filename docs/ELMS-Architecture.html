@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ELMS — System Architecture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      background: #060a14;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: #CBD5E1;
+      padding: 48px 20px 60px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Ambient background glow */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -200px; left: 50%;
+      transform: translateX(-50%);
+      width: 800px; height: 600px;
+      background: radial-gradient(ellipse, rgba(99,102,241,.07) 0%, rgba(59,130,246,.04) 40%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .wrapper { position: relative; z-index: 1; }
+
+    /* ─── Animations ─── */
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .6; }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    /* ─── Header ─── */
+    .header {
+      max-width: 920px; margin: 0 auto 40px; text-align: center;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 16px; border-radius: 20px;
+      background: rgba(5,150,105,.08);
+      border: 1px solid rgba(5,150,105,.2);
+      font-size: 11px; font-weight: 700; color: #34D399;
+      letter-spacing: 2px; text-transform: uppercase;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+    }
+    .badge-dot {
+      width: 6px; height: 6px; border-radius: 50%; background: #34D399;
+      animation: pulseGlow 2s ease-in-out infinite;
+      box-shadow: 0 0 8px rgba(52,211,153,.4);
+    }
+    h1 {
+      font-size: clamp(24px, 4vw, 38px); font-weight: 900;
+      margin: 0 0 8px; color: #F1F5F9;
+      letter-spacing: -0.5px;
+      background: linear-gradient(135deg, #F1F5F9 0%, #94A3B8 50%, #F1F5F9 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: shimmer 6s linear infinite;
+    }
+    .subtitle {
+      font-size: 13px; color: #64748B; margin: 0 0 24px;
+      font-weight: 500; letter-spacing: .3px;
+    }
+    .subtitle span {
+      display: inline-block; margin: 0 4px;
+      color: #475569;
+    }
+
+    /* ─── Toggle Button ─── */
+    .toggle-btn {
+      padding: 8px 20px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      cursor: pointer; transition: all .25s ease;
+      letter-spacing: .3px;
+    }
+    .toggle-btn.active {
+      background: rgba(99,102,241,.15);
+      border: 1px solid rgba(99,102,241,.35);
+      color: #A5B4FC;
+      box-shadow: 0 0 20px rgba(99,102,241,.1);
+    }
+    .toggle-btn.inactive {
+      background: rgba(30,41,59,.6);
+      border: 1px solid rgba(71,85,105,.3);
+      color: #94A3B8;
+    }
+    .toggle-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0,0,0,.3);
+    }
+
+    /* ─── Data Flow Panel ─── */
+    .flow-panel {
+      max-width: 920px; margin: 0 auto 24px;
+      background: rgba(15,23,42,.6);
+      border: 1px solid rgba(99,102,241,.15);
+      border-radius: 14px; padding: 20px 24px;
+      animation: fadeSlideIn .3s ease;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0,0,0,.2);
+    }
+    .flow-title {
+      font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+      color: #818CF8; margin-bottom: 16px;
+    }
+    .flow-row {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12px; margin-bottom: 10px; flex-wrap: wrap;
+      padding: 6px 0;
+    }
+    .flow-row:not(:last-of-type) { border-bottom: 1px solid rgba(51,65,85,.15); }
+    .flow-from {
+      padding: 4px 10px; border-radius: 6px;
+      background: rgba(34,197,94,.1); color: #4ADE80;
+      font-size: 11px; font-weight: 600;
+    }
+    .flow-arrow-line {
+      display: flex; align-items: center; gap: 2px; color: #334155;
+    }
+    .flow-arrow-line svg { width: 20px; height: 12px; }
+    .flow-to {
+      padding: 4px 10px; border-radius: 6px;
+      background: rgba(59,130,246,.1); color: #60A5FA;
+      font-size: 11px; font-weight: 600;
+    }
+    .flow-protocol {
+      padding: 3px 8px; border-radius: 4px;
+      background: rgba(51,65,85,.3);
+      color: #94A3B8; font-size: 10px; font-weight: 500;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    }
+    .flow-note { color: #64748B; font-size: 11px; }
+    .flow-key {
+      margin-top: 16px; padding: 12px 16px;
+      background: rgba(6,10,20,.5);
+      border-radius: 10px; font-size: 11px;
+      color: #64748B; line-height: 1.7;
+      border-left: 3px solid rgba(99,102,241,.3);
+    }
+    .flow-key strong { color: #A5B4FC; font-weight: 600; }
+
+    /* ─── Layers ─── */
+    .layers {
+      max-width: 920px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+
+    .layer-card {
+      background: rgba(15,23,42,.4);
+      border: 1px solid rgba(51,65,85,.2);
+      border-radius: 14px; padding: 16px 20px;
+      cursor: pointer; transition: all .3s ease;
+      position: relative; overflow: hidden;
+    }
+    .layer-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top left, var(--layer-glow, transparent) 0%, transparent 70%);
+      opacity: 0; transition: opacity .3s;
+      pointer-events: none;
+    }
+    .layer-card:hover { border-color: rgba(148,163,184,.25) !important; }
+    .layer-card:hover::before { opacity: 1; }
+    .layer-card.open {
+      background: rgba(15,23,42,.7);
+      box-shadow: 0 8px 32px rgba(0,0,0,.25), inset 0 1px 0 rgba(255,255,255,.03);
+    }
+    .layer-card.open::before { opacity: 1; }
+
+    .layer-indicator {
+      position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+      background: transparent; border-radius: 14px 0 0 14px;
+      transition: all .3s;
+    }
+    .layer-indicator.active {
+      width: 4px;
+      box-shadow: 0 0 12px var(--indicator-color, transparent);
+    }
+
+    .layer-header {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .layer-left { display: flex; align-items: center; gap: 12px; }
+    .layer-num {
+      font-size: 11px; font-weight: 800; border-radius: 6px;
+      padding: 2px 8px; min-width: 26px; text-align: center;
+    }
+    .layer-title-text {
+      font-size: 13px; font-weight: 700; letter-spacing: .8px;
+      transition: color .3s;
+    }
+    .layer-right { display: flex; align-items: center; gap: 10px; }
+    .layer-count {
+      font-size: 11px; color: #475569; font-weight: 500;
+    }
+    .layer-chevron {
+      width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
+      border-radius: 6px; background: rgba(51,65,85,.2);
+      transition: all .3s; color: #64748B; font-size: 11px;
+    }
+    .layer-chevron.open {
+      transform: rotate(180deg);
+      background: rgba(51,65,85,.35);
+    }
+
+    .layer-desc {
+      font-size: 12px; color: #64748B; margin: 10px 0 0 38px;
+      font-weight: 400; line-height: 1.5;
+    }
+
+    .layer-grid {
+      margin-top: 16px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 8px; animation: fadeSlideIn .3s ease;
+    }
+
+    .item-card {
+      background: rgba(6,10,20,.5);
+      border: 1px solid rgba(51,65,85,.2);
+      border-radius: 10px; padding: 14px 16px;
+      transition: all .2s ease;
+    }
+    .item-card:hover {
+      background: rgba(15,23,42,.7) !important;
+      border-color: rgba(71,85,105,.3) !important;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(0,0,0,.2);
+    }
+    .item-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .item-icon {
+      font-size: 16px; width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(51,65,85,.15); border-radius: 7px;
+      flex-shrink: 0;
+    }
+    .item-name {
+      font-size: 12px; font-weight: 600; color: #E2E8F0;
+      line-height: 1.3;
+    }
+    .item-desc {
+      font-size: 11px; color: #64748B; margin: 0; line-height: 1.5;
+      padding-left: 36px;
+    }
+
+    /* ─── Connectors ─── */
+    .connector { display: flex; justify-content: center; height: 8px; }
+    .connector-line {
+      width: 2px; height: 100%;
+      background: linear-gradient(to bottom, rgba(71,85,105,.2), rgba(71,85,105,.08));
+      border-radius: 1px;
+    }
+
+    /* ─── Sections Shared ─── */
+    .section-divider {
+      max-width: 920px; margin: 32px auto 0;
+      position: relative;
+    }
+    .section-divider::before {
+      content: '';
+      position: absolute; top: 0; left: 10%; right: 10%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(71,85,105,.2), transparent);
+    }
+
+    /* ─── Cross Cutting ─── */
+    .cross-cutting {
+      max-width: 920px; margin: 36px auto 0;
+      border: 1px solid rgba(71,85,105,.15); border-radius: 14px;
+      padding: 24px;
+      background: rgba(15,23,42,.25);
+      backdrop-filter: blur(10px);
+    }
+    .section-title {
+      font-size: 10px; font-weight: 700; letter-spacing: 2px; color: #475569;
+      text-align: center; margin-bottom: 16px;
+    }
+    .cross-items { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+    .cross-tag {
+      padding: 6px 14px; border-radius: 8px;
+      background: rgba(6,10,20,.4);
+      border: 1px solid rgba(51,65,85,.2);
+      font-size: 11px; color: #94A3B8; font-weight: 500;
+      transition: all .2s;
+    }
+    .cross-tag:hover {
+      background: rgba(15,23,42,.6);
+      border-color: rgba(71,85,105,.3);
+      color: #CBD5E1;
+    }
+
+    /* ─── Timeline ─── */
+    .timeline {
+      max-width: 920px; margin: 32px auto 0;
+    }
+    .timeline-items {
+      display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+    }
+    .phase-card {
+      padding: 10px 14px; border-radius: 10px; font-size: 10px;
+      text-align: center; min-width: 72px;
+      transition: all .2s; cursor: default;
+      backdrop-filter: blur(4px);
+    }
+    .phase-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,.25);
+    }
+    .phase-num { font-weight: 800; font-size: 12px; margin-bottom: 2px; }
+    .phase-label { color: #94A3B8; font-weight: 600; font-size: 10px; }
+    .phase-days {
+      color: #475569; font-size: 9px; margin-top: 2px;
+      font-weight: 500;
+    }
+
+    /* ─── Footer ─── */
+    .footer {
+      text-align: center; margin-top: 40px; padding-top: 24px;
+      font-size: 11px; color: #334155;
+      border-top: 1px solid rgba(51,65,85,.1);
+      max-width: 920px; margin-left: auto; margin-right: auto;
+      font-weight: 500;
+    }
+    .footer-hint {
+      margin-top: 6px; font-size: 10px; color: #1E293B;
+    }
+
+    /* ─── Responsive ─── */
+    @media (max-width: 640px) {
+      body { padding: 24px 12px 40px; }
+      .layer-card { padding: 14px 14px; }
+      .layer-grid { grid-template-columns: 1fr; }
+      .item-desc { padding-left: 0; }
+      .flow-panel { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="badge">
+      <span class="badge-dot"></span> System Architecture
+    </div>
+    <h1>ELMS — Next.js + Node.js + Supabase</h1>
+    <p class="subtitle">12 Phases <span>·</span> 40 Prompts <span>·</span> ~33 Days <span>·</span> 20,000+ Users</p>
+    <button id="flowToggle" class="toggle-btn inactive" onclick="toggleFlow()">
+      &#9656; Show Data Flow
+    </button>
+  </div>
+
+  <div id="flowPanel" class="flow-panel" style="display:none;"></div>
+
+  <div id="layersContainer" class="layers"></div>
+
+  <div class="cross-cutting">
+    <div class="section-title">CROSS-CUTTING CONCERNS</div>
+    <div id="crossItems" class="cross-items"></div>
+  </div>
+
+  <div class="timeline">
+    <div class="section-title" style="margin-bottom:16px;">BUILD TIMELINE — 12 PHASES · ~33 DAYS</div>
+    <div id="timelineItems" class="timeline-items"></div>
+  </div>
+
+  <div class="footer">
+    ELMS v3.0 — Next.js 14 + Node.js / Express + Supabase
+    <div class="footer-hint">Click any layer to explore its components</div>
+  </div>
+
+</div>
+
+<script>
+const layers = [
+  {
+    id: "frontend",
+    title: "FRONTEND — Next.js 14",
+    color: "#0F766E",
+    accent: "#5EEAD4",
+    desc: "App Router · SSR/SSG · Tailwind · Zustand · Axios \u2192 Backend API",
+    items: [
+      { name: "App Router Pages", icon: "\u{1F4C4}", desc: "Role-based routes: /learner, /instructor, /admin" },
+      { name: "React Components", icon: "\u{1F9E9}", desc: "Course viewer, quiz player, dashboards, forms" },
+      { name: "Zustand Stores", icon: "\u{1F5C3}\uFE0F", desc: "Auth state, UI state, persisted to localStorage" },
+      { name: "Axios API Client", icon: "\u{1F517}", desc: "All data fetched from Node.js backend, never Supabase directly" },
+      { name: "Supabase Realtime", icon: "\u{1F4E1}", desc: "ONLY direct Supabase connection \u2014 live notifications, chat, leaderboard" },
+      { name: "Tailwind + lucide", icon: "\u{1F3A8}", desc: "Responsive design, WCAG 2.1 AA, mobile-first" },
+    ],
+  },
+  {
+    id: "backend",
+    title: "BACKEND API — Node.js / Express",
+    color: "#7C3AED",
+    accent: "#C4B5FD",
+    desc: "REST API · Business Logic · JWT Auth · File Uploads · Cron Jobs",
+    items: [
+      { name: "Auth Module", icon: "\u{1F510}", desc: "Register, login, refresh, JWT verification, role guards" },
+      { name: "Courses Module", icon: "\u{1F4DA}", desc: "CRUD, slug generation, multi-instructor, publish workflow" },
+      { name: "Content Module", icon: "\u{1F4C1}", desc: "Modules, lessons, file upload to Supabase Storage" },
+      { name: "Enrollments Module", icon: "\u{1F4DD}", desc: "Self-enroll, progress tracking, lesson completion" },
+      { name: "Assessments Module", icon: "\u270F\uFE0F", desc: "Question bank, quiz builder, auto+manual grading" },
+      { name: "Gamification Module", icon: "\u{1F3C6}", desc: "Points, levels, badges, leaderboard, streaks" },
+      { name: "Certificates Module", icon: "\u{1F393}", desc: "HTML\u2192PDF via Puppeteer, verification codes, S3 upload" },
+      { name: "Communication Module", icon: "\u{1F4AC}", desc: "Forums, messaging, notifications, announcements" },
+      { name: "Admin Module", icon: "\u2699\uFE0F", desc: "User management, bundles, audit logs, integrations, analytics" },
+      { name: "Middleware Stack", icon: "\u{1F6E1}\uFE0F", desc: "JWT auth, role guards, Zod validation, rate limiting, error handling" },
+    ],
+  },
+  {
+    id: "supabase",
+    title: "SUPABASE PLATFORM",
+    color: "#059669",
+    accent: "#6EE7B7",
+    desc: "Managed PostgreSQL · Auth · Storage · Realtime · Edge Functions",
+    items: [
+      { name: "PostgreSQL (25 tables)", icon: "\u{1F5C4}\uFE0F", desc: "Profiles, courses, assessments, gamification, comms, audit" },
+      { name: "Row Level Security", icon: "\u{1F6E1}\uFE0F", desc: "Per-table policies \u2014 protects Realtime subscriptions" },
+      { name: "DB Functions (9)", icon: "\u26A1", desc: "Auto-grade, award points, leaderboard, course progress, stats" },
+      { name: "Auth Service", icon: "\u{1F511}", desc: "JWT tokens, user management, password reset, SSO-ready" },
+      { name: "Storage Buckets", icon: "\u2601\uFE0F", desc: "course-content (PDFs, videos, slides) + certificates (PDFs)" },
+      { name: "Realtime Engine", icon: "\u{1F4E1}", desc: "WebSocket \u2192 frontend for live notifications, chat, updates" },
+      { name: "Triggers", icon: "\u{1F514}", desc: "Auto-create profile on signup, auto-update timestamps" },
+    ],
+  },
+  {
+    id: "integrations",
+    title: "THIRD-PARTY SERVICES",
+    color: "#D97706",
+    accent: "#FCD34D",
+    desc: "Video Conferencing · Email · ERP · PDF Generation",
+    items: [
+      { name: "Zoom / Google Meet", icon: "\u{1F3A5}", desc: "Video conferencing API via adapter pattern" },
+      { name: "SendGrid / SMTP", icon: "\u2709\uFE0F", desc: "Transactional emails, password reset, notifications" },
+      { name: "ICTA ERP Connector", icon: "\u{1F3E2}", desc: "REST API integration with existing systems" },
+      { name: "Puppeteer", icon: "\u{1F4C4}", desc: "Server-side HTML\u2192PDF for certificate generation" },
+    ],
+  },
+  {
+    id: "devops",
+    title: "DEPLOYMENT & OPS",
+    color: "#64748B",
+    accent: "#94A3B8",
+    desc: "Docker · CI/CD · Monitoring · Backups",
+    items: [
+      { name: "Docker Compose", icon: "\u{1F433}", desc: "Frontend (3000) + Backend (4000) containers" },
+      { name: "GitHub Actions", icon: "\u{1F504}", desc: "Lint \u2192 Test \u2192 Build \u2192 Deploy pipeline" },
+      { name: "Vercel (Frontend)", icon: "\u25B2", desc: "Edge deployment for Next.js" },
+      { name: "Supabase Cloud", icon: "\u26A1", desc: "Managed DB, Auth, Storage \u2014 auto backups" },
+      { name: "Sentry", icon: "\u{1F6A8}", desc: "Error tracking for frontend + backend" },
+    ],
+  },
+];
+
+const dataFlows = [
+  { from: "Next.js", to: "Node.js API", protocol: "REST / JSON", note: "ALL reads & writes" },
+  { from: "Node.js API", to: "Supabase DB", protocol: "supabase-js (service_role)", note: "Bypasses RLS" },
+  { from: "Node.js API", to: "Supabase Storage", protocol: "supabase-js", note: "File upload/serve" },
+  { from: "Next.js", to: "Supabase Realtime", protocol: "WebSocket (anon key)", note: "ONLY direct connection \u2014 RLS enforced" },
+];
+
+const crossCutting = [
+  "Audit Logging", "TLS + AES Encryption", "Kenya DPA Compliance",
+  "20K+ Users", "WCAG 2.1 AA", "Rate Limiting",
+];
+
+const phases = [
+  { n: "0", label: "Setup", d: 2 }, { n: "1", label: "DB Schema", d: 2 },
+  { n: "2", label: "Auth", d: 2 }, { n: "3", label: "Layout", d: 1 },
+  { n: "4", label: "Courses", d: 4 }, { n: "5", label: "Learner", d: 3 },
+  { n: "6", label: "Assess", d: 5 }, { n: "7", label: "Gamify", d: 3 },
+  { n: "8", label: "Comms", d: 3 }, { n: "9", label: "Admin", d: 3 },
+  { n: "10", label: "Realtime", d: 2 }, { n: "11-12", label: "Ship", d: 3 },
+];
+
+const phaseColors = [
+  "#64748B","#059669","#7C3AED","#0F766E","#2563EB","#0891B2",
+  "#DC2626","#D97706","#0891B2","#7C3AED","#2563EB","#64748B"
+];
+
+let expanded = "backend";
+let showFlow = false;
+
+function toggleFlow() {
+  showFlow = !showFlow;
+  const btn = document.getElementById("flowToggle");
+  const panel = document.getElementById("flowPanel");
+  if (showFlow) {
+    btn.className = "toggle-btn active";
+    btn.innerHTML = "\u25BE Hide Data Flow";
+    panel.style.display = "block";
+    renderFlowPanel();
+  } else {
+    btn.className = "toggle-btn inactive";
+    btn.innerHTML = "&#9656; Show Data Flow";
+    panel.style.display = "none";
+  }
+}
+
+function renderFlowPanel() {
+  const panel = document.getElementById("flowPanel");
+  let html = '<div class="flow-title">DATA FLOW</div>';
+  dataFlows.forEach(f => {
+    html += `<div class="flow-row">
+      <span class="flow-from">${f.from}</span>
+      <span class="flow-arrow-line">
+        <svg viewBox="0 0 24 12" fill="none"><path d="M0 6h20m0 0l-4-4m4 4l-4 4" stroke="#475569" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </span>
+      <span class="flow-to">${f.to}</span>
+      <span class="flow-protocol">${f.protocol}</span>
+      <span class="flow-note">${f.note}</span>
+    </div>`;
+  });
+  html += `<div class="flow-key">
+    <strong>Key rule:</strong> Frontend never writes to Supabase directly. All mutations go through the Node.js backend for validation, business logic, and audit logging. The only direct frontend\u2194Supabase link is Realtime WebSockets for live updates.
+  </div>`;
+  panel.innerHTML = html;
+}
+
+function toggleLayer(id) {
+  expanded = expanded === id ? null : id;
+  renderLayers();
+}
+
+function renderLayers() {
+  const container = document.getElementById("layersContainer");
+  let html = "";
+  layers.forEach((layer, idx) => {
+    const open = expanded === layer.id;
+    const borderColor = open ? layer.color + "44" : "rgba(51,65,85,.2)";
+    const bgClass = open ? "open" : "";
+    const glowColor = layer.color + "08";
+
+    html += `<div>
+      <div class="layer-card ${bgClass}" onclick="toggleLayer('${layer.id}')"
+           style="border-color:${borderColor};--layer-glow:${glowColor};">
+        <div class="layer-indicator ${open ? 'active' : ''}" style="background:${open ? layer.color : 'transparent'};--indicator-color:${layer.color};"></div>
+        <div class="layer-header">
+          <div class="layer-left">
+            <span class="layer-num" style="color:${layer.accent};background:${layer.color}15;border:1px solid ${layer.color}30;">${idx + 1}</span>
+            <span class="layer-title-text" style="color:${open ? layer.accent : '#94A3B8'};">${layer.title}</span>
+          </div>
+          <div class="layer-right">
+            <span class="layer-count">${layer.items.length} components</span>
+            <span class="layer-chevron ${open ? 'open' : ''}">&#9662;</span>
+          </div>
+        </div>`;
+    if (open) {
+      html += `<p class="layer-desc">${layer.desc}</p>
+        <div class="layer-grid">`;
+      layer.items.forEach(item => {
+        html += `<div class="item-card">
+          <div class="item-header">
+            <span class="item-icon">${item.icon}</span>
+            <span class="item-name">${item.name}</span>
+          </div>
+          <p class="item-desc">${item.desc}</p>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+    html += `</div>`;
+    if (idx < layers.length - 1) {
+      html += `<div class="connector"><div class="connector-line"></div></div>`;
+    }
+    html += `</div>`;
+  });
+  container.innerHTML = html;
+}
+
+function renderCrossCutting() {
+  const container = document.getElementById("crossItems");
+  container.innerHTML = crossCutting.map(c =>
+    `<span class="cross-tag">${c}</span>`
+  ).join("");
+}
+
+function renderTimeline() {
+  const container = document.getElementById("timelineItems");
+  container.innerHTML = phases.map((p, i) => {
+    const c = phaseColors[i] || "#64748B";
+    return `<div class="phase-card" style="background:${c}10;border:1px solid ${c}25;">
+      <div class="phase-num" style="color:${c};">P${p.n}</div>
+      <div class="phase-label">${p.label}</div>
+      <div class="phase-days">${p.d} days</div>
+    </div>`;
+  }).join("");
+}
+
+// Initial render
+renderLayers();
+renderCrossCutting();
+renderTimeline();
+</script>
+
+</body>
+</html>
