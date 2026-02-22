@@ -1,12 +1,14 @@
 import { config } from 'dotenv';
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { resolve } from 'path';
 import { z } from 'zod';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-// Load .env from monorepo root (two levels up from src/config/)
-config({ path: resolve(__dirname, '../../../.env') });
+// Load .env — skipped on Vercel (env vars set in dashboard)
+if (!process.env.VERCEL) {
+  // Try monorepo root (one level up from backend/)
+  config({ path: resolve(process.cwd(), '../.env') });
+  // Fallback: try current directory
+  config({ path: resolve(process.cwd(), '.env') });
+}
 
 const envSchema = z.object({
   PORT: z.coerce.number().default(4000),
