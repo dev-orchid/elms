@@ -5,12 +5,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod/v3';
 import { X, Upload } from 'lucide-react';
+import { toast } from 'sonner';
 import api from '@/lib/api';
 
 const lessonFormSchema = z.object({
   title: z.string().min(1, 'Title is required').max(255),
   description: z.string().max(2000).optional(),
-  content_type: z.enum(['video', 'document', 'text', 'quiz', 'assignment']).optional(),
+  content_type: z.enum(['video', 'pdf', 'text', 'embed', 'slides']).optional(),
   content_url: z.string().optional(),
   content_body: z.string().optional(),
   duration_minutes: z.number().int().min(0).optional(),
@@ -84,8 +85,12 @@ export function LessonFormModal({ isOpen, onClose, onSubmit, defaultValues, isEd
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setValue('content_url', res.data.url);
-    } catch {
-      // Error handled by axios interceptor
+      toast.success('File uploaded successfully');
+    } catch (err: unknown) {
+      const message =
+        (err as { response?: { data?: { error?: string } } })?.response?.data?.error ||
+        'Failed to upload file';
+      toast.error(message);
     } finally {
       setUploading(false);
     }
@@ -161,10 +166,10 @@ export function LessonFormModal({ isOpen, onClose, onSubmit, defaultValues, isEd
               >
                 <option value="">Select type</option>
                 <option value="video">Video</option>
-                <option value="document">Document</option>
+                <option value="pdf">PDF / Document</option>
                 <option value="text">Text</option>
-                <option value="quiz">Quiz</option>
-                <option value="assignment">Assignment</option>
+                <option value="embed">Embed</option>
+                <option value="slides">Slides</option>
               </select>
             </div>
 

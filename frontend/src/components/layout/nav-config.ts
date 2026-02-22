@@ -6,11 +6,13 @@ import {
   Trophy,
   Library,
   HelpCircle,
+  ClipboardCheck,
   BarChart3,
   Users,
   Package,
   ScrollText,
   Settings,
+  MessageSquare,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -26,13 +28,16 @@ export const learnerNav: NavItem[] = [
   { label: 'My Learning', href: '/learner/my-learning', icon: GraduationCap },
   { label: 'Certificates', href: '/learner/certificates', icon: Award },
   { label: 'Leaderboard', href: '/learner/leaderboard', icon: Trophy },
+  { label: 'Messages', href: '/messages', icon: MessageSquare },
 ];
 
 export const instructorNav: NavItem[] = [
   { label: 'Dashboard', href: '/instructor', icon: LayoutDashboard },
   { label: 'My Courses', href: '/instructor/courses', icon: Library },
   { label: 'Question Bank', href: '/instructor/question-bank', icon: HelpCircle },
+  { label: 'Assessments', href: '/instructor/assessments', icon: ClipboardCheck },
   { label: 'Analytics', href: '/instructor/analytics', icon: BarChart3 },
+  { label: 'Messages', href: '/messages', icon: MessageSquare },
 ];
 
 export const adminNav: NavItem[] = [

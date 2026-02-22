@@ -36,7 +36,7 @@ export const reorderModulesSchema = z.object({
 export const createLessonSchema = z.object({
   title: z.string().min(1, 'Title is required').max(255),
   description: z.string().max(2000).optional(),
-  content_type: z.enum(['video', 'document', 'text', 'quiz', 'assignment']).optional(),
+  content_type: z.enum(['video', 'pdf', 'text', 'embed', 'slides']).optional(),
   content_url: z.string().url().optional().nullable(),
   content_body: z.string().optional().nullable(),
   duration_minutes: z.number().int().min(0).optional(),
@@ -46,7 +46,7 @@ export const createLessonSchema = z.object({
 export const updateLessonSchema = z.object({
   title: z.string().min(1).max(255).optional(),
   description: z.string().max(2000).optional(),
-  content_type: z.enum(['video', 'document', 'text', 'quiz', 'assignment']).optional(),
+  content_type: z.enum(['video', 'pdf', 'text', 'embed', 'slides']).optional(),
   content_url: z.string().url().optional().nullable(),
   content_body: z.string().optional().nullable(),
   duration_minutes: z.number().int().min(0).optional(),

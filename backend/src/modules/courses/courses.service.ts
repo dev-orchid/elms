@@ -291,7 +291,7 @@ export class CoursesService {
     // Don't allow removing the last lead instructor
     const { data: leads } = await supabase
       .from('course_instructors')
-      .select('id, instructor_id')
+      .select('instructor_id')
       .eq('course_id', courseId)
       .eq('role', 'lead');
 
@@ -317,7 +317,7 @@ export class CoursesService {
 
     const { data: assignment } = await supabase
       .from('course_instructors')
-      .select('id')
+      .select('course_id')
       .eq('course_id', courseId)
       .eq('instructor_id', userId)
       .single();

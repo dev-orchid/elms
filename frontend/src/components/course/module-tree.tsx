@@ -71,7 +71,8 @@ export function ModuleTree({ courseId, modules }: ModuleTreeProps) {
       toast.success('Module added');
       invalidate();
     },
-    onError: () => toast.error('Failed to add module'),
+    onError: (err: { response?: { data?: { error?: string } } }) =>
+      toast.error(err.response?.data?.error || 'Failed to add module'),
   });
 
   const updateModule = useMutation({
@@ -109,7 +110,8 @@ export function ModuleTree({ courseId, modules }: ModuleTreeProps) {
       toast.success('Lesson added');
       invalidate();
     },
-    onError: () => toast.error('Failed to add lesson'),
+    onError: (err: { response?: { data?: { error?: string } } }) =>
+      toast.error(err.response?.data?.error || 'Failed to add lesson'),
   });
 
   const updateLesson = useMutation({
@@ -354,7 +356,7 @@ export function ModuleTree({ courseId, modules }: ModuleTreeProps) {
             ? {
                 title: lessonModal.editing.title,
                 description: lessonModal.editing.description,
-                content_type: lessonModal.editing.content_type as 'video' | 'document' | 'text' | 'quiz' | 'assignment' | undefined,
+                content_type: lessonModal.editing.content_type as 'video' | 'pdf' | 'text' | 'embed' | 'slides' | undefined,
                 content_url: lessonModal.editing.content_url || '',
                 content_body: lessonModal.editing.content_body || '',
                 duration_minutes: lessonModal.editing.duration_minutes,

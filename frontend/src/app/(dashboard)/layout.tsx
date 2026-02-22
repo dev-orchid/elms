@@ -2,10 +2,37 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { useAuthStore } from '@/stores/auth-store';
 import { Sidebar } from '@/components/layout/sidebar';
 import { MobileSidebar } from '@/components/layout/mobile-sidebar';
 import { Header } from '@/components/layout/header';
+import { useRealtimeTable } from '@/hooks/use-realtime';
+
+function GradingListener() {
+  const { user } = useAuthStore();
+
+  // Realtime: submissions UPDATE → "Assessment graded" toast for learners
+  useRealtimeTable<{ id: string; user_id: string; status: string }>({
+    table: 'submissions',
+    event: 'UPDATE',
+    filter: user ? `user_id=eq.${user.id}` : undefined,
+    enabled: !!user && user.role === 'learner',
+    onUpdate: (record) => {
+      if (record.status === 'graded') {
+        toast.success('Your assessment has been graded!', {
+          description: 'Check your results now.',
+          action: {
+            label: 'View',
+            onClick: () => window.location.href = '/learner/my-learning',
+          },
+        });
+      }
+    },
+  });
+
+  return null;
+}
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -42,6 +69,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <MobileSidebar />
         <div className="flex-1 flex flex-col min-h-screen">
           <Header />
+          <GradingListener />
           <main className="flex-1 p-4 lg:p-6">{children}</main>
         </div>
       </div>

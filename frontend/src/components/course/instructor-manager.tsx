@@ -140,7 +140,7 @@ export function InstructorManager({ courseId, instructors }: InstructorManagerPr
           </div>
         ) : (
           instructors.map((instr) => (
-            <div key={instr.id} className="flex items-center gap-3 px-4 py-3">
+            <div key={instr.instructor_id} className="flex items-center gap-3 px-4 py-3">
               <div className="h-8 w-8 rounded-full bg-teal-100 text-teal-700 flex items-center justify-center text-sm font-medium shrink-0">
                 {instr.profile.first_name?.[0]}{instr.profile.last_name?.[0]}
               </div>
