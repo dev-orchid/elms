@@ -1,6 +1,6 @@
 import { supabase } from '../../lib/supabase.js';
 import { AppError, NotFoundError, UnauthorizedError, ValidationError } from '../../lib/errors.js';
-import type { RegisterInput, LoginInput, UpdateProfileInput } from './auth.validators.js';
+import type { RegisterInput, LoginInput, UpdateProfileInput, ChangePasswordInput } from './auth.validators.js';
 
 export class AuthService {
   async register(input: RegisterInput) {
@@ -132,6 +132,107 @@ export class AuthService {
     }
 
     return profile;
+  }
+
+  async uploadAvatar(userId: string, file: Express.Multer.File) {
+    const ext = file.originalname.split('.').pop() || 'jpg';
+    const path = `avatars/${userId}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('course-content')
+      .upload(path, file.buffer, {
+        contentType: file.mimetype,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      throw new AppError('Failed to upload avatar: ' + uploadError.message, 400);
+    }
+
+    const { data: urlData } = supabase.storage.from('course-content').getPublicUrl(path);
+    const avatar_url = urlData.publicUrl;
+
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .update({ avatar_url })
+      .eq('id', userId)
+      .select('*')
+      .single();
+
+    if (error) {
+      throw new AppError('Failed to update avatar URL', 400);
+    }
+
+    return profile;
+  }
+
+  async uploadBanner(userId: string, file: Express.Multer.File) {
+    const ext = file.originalname.split('.').pop() || 'jpg';
+    const path = `banners/${userId}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('course-content')
+      .upload(path, file.buffer, {
+        contentType: file.mimetype,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      throw new AppError('Failed to upload banner: ' + uploadError.message, 400);
+    }
+
+    const { data: urlData } = supabase.storage.from('course-content').getPublicUrl(path);
+    const banner_url = urlData.publicUrl;
+
+    const { data: profile, error } = await supabase
+      .from('profiles')
+      .update({ banner_url })
+      .eq('id', userId)
+      .select('*')
+      .single();
+
+    if (error) {
+      throw new AppError('Failed to update banner URL', 400);
+    }
+
+    return profile;
+  }
+
+  async changePassword(userId: string, email: string, input: ChangePasswordInput) {
+    // Verify current password by attempting sign-in
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password: input.current_password,
+    });
+
+    if (signInError) {
+      throw new ValidationError('Current password is incorrect');
+    }
+
+    // Update password via admin API
+    const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
+      password: input.new_password,
+    });
+
+    if (updateError) {
+      throw new AppError('Failed to update password', 400);
+    }
+
+    // Sign in again with the new password to get fresh tokens
+    const { data: freshSession, error: freshError } = await supabase.auth.signInWithPassword({
+      email,
+      password: input.new_password,
+    });
+
+    if (freshError || !freshSession.session) {
+      return { message: 'Password updated successfully' };
+    }
+
+    return {
+      message: 'Password updated successfully',
+      token: freshSession.session.access_token,
+      refresh_token: freshSession.session.refresh_token,
+    };
   }
 
   async forgotPassword(email: string) {

@@ -59,7 +59,7 @@ export default function TakeAssessmentPage() {
     onSuccess: (res) => {
       const data = res.data;
       setSubmissionId(data.submission.id);
-      setQuestions(data.questions || []);
+      setQuestions((data.questions || []).filter(Boolean));
       setAssessmentTitle(data.assessment?.title || 'Assessment');
 
       // Restore saved answers
@@ -220,12 +220,29 @@ export default function TakeAssessmentPage() {
             )}
           </div>
         )}
-        <button
-          onClick={() => router.back()}
-          className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg shadow-sm transition-colors"
-        >
-          Back to Course
-        </button>
+        <div className="flex flex-col items-center gap-3">
+          <button
+            onClick={() => {
+              // Reset state for retake
+              setPhase('pre-start');
+              setSubmissionId(null);
+              setQuestions([]);
+              setAnswers({});
+              setCurrentIdx(0);
+              setTimeLeft(null);
+              setResult(null);
+            }}
+            className="px-6 py-2.5 bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100 font-medium rounded-lg transition-colors"
+          >
+            Retake Assessment
+          </button>
+          <button
+            onClick={() => router.back()}
+            className="px-6 py-2.5 bg-teal-600 hover:bg-teal-700 text-white font-medium rounded-lg shadow-sm transition-colors"
+          >
+            Back to Course
+          </button>
+        </div>
       </div>
     );
   }

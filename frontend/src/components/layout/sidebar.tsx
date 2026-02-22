@@ -10,7 +10,11 @@ import { getNavForRole, type NavItem } from './nav-config';
 
 function NavLink({ item, collapsed }: { item: NavItem; collapsed: boolean }) {
   const pathname = usePathname();
-  const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+  // Dashboard links (/instructor, /learner, /admin) should only match exactly
+  const isDashboard = item.label === 'Dashboard';
+  const isActive = isDashboard
+    ? pathname === item.href
+    : pathname === item.href || pathname.startsWith(item.href + '/');
   const Icon = item.icon;
 
   return (

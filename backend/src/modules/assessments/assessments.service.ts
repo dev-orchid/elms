@@ -167,20 +167,38 @@ export class AssessmentsService {
   async getAssessment(assessmentId: string) {
     const { data, error } = await supabase
       .from('assessments')
-      .select(`
-        *,
-        assessment_questions(
-          sort_order,
-          question:question_bank(*)
-        )
-      `)
+      .select('*')
       .eq('id', assessmentId)
       .eq('is_deleted', false)
-      .order('sort_order', { referencedTable: 'assessment_questions', ascending: true })
       .single();
 
     if (error || !data) throw new NotFoundError('Assessment');
-    return data;
+
+    // Fetch assessment_questions with question details separately
+    const { data: aqRows } = await supabase
+      .from('assessment_questions')
+      .select('question_id, sort_order')
+      .eq('assessment_id', assessmentId)
+      .order('sort_order', { ascending: true });
+
+    const questionIds = (aqRows || []).map((r) => r.question_id);
+    let questionMap = new Map<string, Record<string, unknown>>();
+    if (questionIds.length > 0) {
+      const { data: qRows } = await supabase
+        .from('question_bank')
+        .select('*')
+        .in('id', questionIds)
+        .eq('is_deleted', false);
+      questionMap = new Map((qRows || []).map((q) => [q.id, q]));
+    }
+
+    const assessment_questions = (aqRows || []).map((aq) => ({
+      question_id: aq.question_id,
+      sort_order: aq.sort_order,
+      question: questionMap.get(aq.question_id) || null,
+    }));
+
+    return { ...data, assessment_questions };
   }
 
   async createAssessment(input: CreateAssessmentInput, userId: string, userRole: string) {
@@ -227,25 +245,35 @@ export class AssessmentsService {
     const a = await this.getAssessmentOrThrow(assessmentId);
     await coursesService.assertCourseAccess(a.course_id, userId, userRole);
 
-    // Get current max sort_order
-    const { data: existing } = await supabase
+    // Get already-linked question IDs to avoid duplicates
+    const { data: alreadyLinked } = await supabase
       .from('assessment_questions')
-      .select('sort_order')
-      .eq('assessment_id', assessmentId)
-      .order('sort_order', { ascending: false })
-      .limit(1);
+      .select('question_id, sort_order')
+      .eq('assessment_id', assessmentId);
 
-    let nextOrder = existing && existing.length > 0 ? existing[0].sort_order + 1 : 0;
+    const linkedSet = new Set((alreadyLinked || []).map((r) => r.question_id));
+    const maxOrder = (alreadyLinked || []).reduce((max, r) => Math.max(max, r.sort_order), -1);
+    let nextOrder = maxOrder + 1;
 
-    const rows = questionIds.map((qid) => ({
+    // Filter out already-linked questions
+    const newIds = questionIds.filter((id) => !linkedSet.has(id));
+    if (newIds.length === 0) {
+      // All questions already linked — no-op success
+      return;
+    }
+
+    const rows = newIds.map((qid) => ({
       assessment_id: assessmentId,
       question_id: qid,
       sort_order: nextOrder++,
     }));
 
-    const { error } = await supabase
+    const { data, error } = await supabase
       .from('assessment_questions')
-      .upsert(rows, { onConflict: 'assessment_id,question_id' });
+      .insert(rows)
+      .select('*');
+
+    console.log('[addQuestions] insert result:', { assessmentId, rows: rows.length, inserted: data?.length, error });
 
     if (error) throw new AppError('Failed to add questions: ' + error.message, 400);
   }
@@ -435,6 +463,18 @@ export class AssessmentsService {
     };
   }
 
+  async getMySubmissions(assessmentId: string, userId: string) {
+    const { data, error } = await supabase
+      .from('submissions')
+      .select('id, attempt_number, status, score, total_points, started_at, submitted_at')
+      .eq('assessment_id', assessmentId)
+      .eq('user_id', userId)
+      .order('attempt_number', { ascending: false });
+
+    if (error) throw new AppError('Failed to fetch submissions', 500);
+    return { submissions: data || [] };
+  }
+
   // ─── Grading ──────────────────────────────────────────
 
   async listSubmissions(assessmentId: string, query: { status?: string; page?: string; limit?: string }, userId: string, userRole: string) {
@@ -581,17 +621,32 @@ export class AssessmentsService {
   }
 
   private async getSubmissionForTaking(submissionId: string, assessmentId: string, shuffle: boolean) {
-    // Get questions without correct answers
-    let qb = supabase
+    // Get assessment_questions rows (just IDs and order)
+    const { data: aqRows, error: aqError } = await supabase
       .from('assessment_questions')
-      .select('sort_order, question:question_bank(id, question_type, question_text, options, points)')
-      .eq('assessment_id', assessmentId);
+      .select('question_id, sort_order')
+      .eq('assessment_id', assessmentId)
+      .order('sort_order', { ascending: true });
 
-    if (!shuffle) {
-      qb = qb.order('sort_order', { ascending: true });
+    console.log('[getSubmissionForTaking] assessment_questions query:', { assessmentId, rows: aqRows?.length, error: aqError });
+
+    const questionIds = (aqRows || []).map((r) => r.question_id);
+
+    // Fetch question details separately (avoids embedded-select join issues)
+    let questionList: Record<string, unknown>[] = [];
+    if (questionIds.length > 0) {
+      const { data: qRows, error: qError } = await supabase
+        .from('question_bank')
+        .select('id, question_type, question_text, options, points')
+        .in('id', questionIds)
+        .eq('is_deleted', false);
+
+      console.log('[getSubmissionForTaking] question_bank query:', { questionIds, qRowsCount: qRows?.length, error: qError });
+
+      // Preserve sort order from assessment_questions
+      const qMap = new Map((qRows || []).map((q) => [q.id, q]));
+      questionList = questionIds.map((id) => qMap.get(id)).filter(Boolean) as Record<string, unknown>[];
     }
-
-    const { data: questions } = await qb;
 
     // Get existing answers
     const { data: answers } = await supabase
@@ -612,8 +667,6 @@ export class AssessmentsService {
       .select('time_limit_minutes, title')
       .eq('id', assessmentId)
       .single();
-
-    let questionList = (questions || []).map((q) => q.question);
 
     if (shuffle) {
       // Fisher-Yates shuffle

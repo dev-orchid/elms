@@ -499,6 +499,7 @@ function QuestionPickerModal({
       return res.data.questions as Question[];
     },
     enabled: !!courseId,
+    staleTime: 0,
   });
 
   const linkedQuestionIds = new Set(

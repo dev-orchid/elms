@@ -10,7 +10,10 @@ import { getNavForRole, type NavItem } from './nav-config';
 
 function MobileNavLink({ item, onClose }: { item: NavItem; onClose: () => void }) {
   const pathname = usePathname();
-  const isActive = pathname === item.href || pathname.startsWith(item.href + '/');
+  const isDashboard = item.label === 'Dashboard';
+  const isActive = isDashboard
+    ? pathname === item.href
+    : pathname === item.href || pathname.startsWith(item.href + '/');
   const Icon = item.icon;
 
   return (

@@ -26,8 +26,12 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401 && typeof window !== 'undefined') {
-      localStorage.removeItem('auth-storage');
-      window.location.href = '/login';
+      // Don't redirect on auth endpoints — let the login/register pages handle their own errors
+      const url = error.config?.url || '';
+      if (!url.startsWith('/auth/')) {
+        localStorage.removeItem('auth-storage');
+        window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   },

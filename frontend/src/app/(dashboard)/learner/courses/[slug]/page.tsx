@@ -398,27 +398,65 @@ const ASSESSMENT_TYPE_COLORS: Record<string, string> = {
   assignment: 'bg-purple-100 text-purple-800',
 };
 
+interface LearnerAssessment {
+  id: string;
+  title: string;
+  type: string;
+  description?: string;
+  time_limit_minutes?: number | null;
+  max_attempts: number;
+  passing_score: number;
+  assessment_questions?: Array<{ question_id: string }>;
+  // Populated from submissions query
+  best_score?: number | null;
+  best_total?: number | null;
+  best_percentage?: number | null;
+  attempts_used?: number;
+  last_status?: string | null;
+}
+
 function CourseAssessments({ courseId }: { courseId: string }) {
   const { data, isLoading } = useQuery({
-    queryKey: ['course-assessments', courseId],
+    queryKey: ['course-assessments-with-status', courseId],
     queryFn: async () => {
       const res = await api.get('/assessments', { params: { course_id: courseId, limit: '50' } });
-      return res.data as {
-        assessments: Array<{
-          id: string;
-          title: string;
-          type: string;
-          description?: string;
-          time_limit_minutes?: number | null;
-          max_attempts: number;
-          passing_score: number;
-          assessment_questions?: Array<{ question_id: string }>;
-        }>;
-      };
+      const assessments = (res.data.assessments || []) as LearnerAssessment[];
+
+      // Fetch learner's own submissions for each assessment in parallel
+      const withStatus = await Promise.all(
+        assessments.map(async (a) => {
+          try {
+            const subRes = await api.get(`/assessments/${a.id}/my-submissions`);
+            const subs = (subRes.data.submissions || []) as Array<{
+              score: number | null;
+              total_points: number | null;
+              status: string;
+            }>;
+            const completed = subs.filter((s) => s.status === 'graded' || s.status === 'submitted');
+            const best = completed.reduce<{ score: number; total: number; pct: number } | null>((acc, s) => {
+              if (s.score == null || s.total_points == null) return acc;
+              const pct = s.total_points > 0 ? (s.score / s.total_points) * 100 : 0;
+              if (!acc || pct > acc.pct) return { score: s.score, total: s.total_points, pct };
+              return acc;
+            }, null);
+            return {
+              ...a,
+              best_score: best?.score ?? null,
+              best_total: best?.total ?? null,
+              best_percentage: best ? Math.round(best.pct) : null,
+              attempts_used: subs.length,
+              last_status: completed.length > 0 ? completed[0].status : null,
+            };
+          } catch {
+            return { ...a, attempts_used: 0 };
+          }
+        }),
+      );
+      return withStatus;
     },
   });
 
-  const assessments = data?.assessments || [];
+  const assessments = data || [];
 
   if (isLoading) {
     return (
@@ -441,16 +479,18 @@ function CourseAssessments({ courseId }: { courseId: string }) {
     <div className="grid gap-4 sm:grid-cols-2">
       {assessments.map((a) => {
         const qCount = a.assessment_questions?.length ?? 0;
+        const hasAttempted = (a.attempts_used || 0) > 0;
+        const passed = a.best_percentage != null && a.best_percentage >= a.passing_score;
+        const attemptsRemaining = a.max_attempts - (a.attempts_used || 0);
+        const canRetake = attemptsRemaining > 0;
+
         return (
-          <Link
+          <div
             key={a.id}
-            href={`/learner/assessments/${a.id}`}
-            className="bg-white rounded-xl border border-slate-200 p-5 hover:border-teal-300 hover:shadow-sm transition-all group"
+            className="bg-white rounded-xl border border-slate-200 p-5 transition-all"
           >
             <div className="flex items-start justify-between mb-2">
-              <h3 className="font-semibold text-slate-800 group-hover:text-teal-700 transition-colors">
-                {a.title}
-              </h3>
+              <h3 className="font-semibold text-slate-800">{a.title}</h3>
               <span className={`text-xs px-2 py-0.5 rounded-full font-medium shrink-0 ml-2 ${ASSESSMENT_TYPE_COLORS[a.type] || 'bg-slate-100 text-slate-600'}`}>
                 {ASSESSMENT_TYPE_LABELS[a.type] || a.type}
               </span>
@@ -458,7 +498,30 @@ function CourseAssessments({ courseId }: { courseId: string }) {
             {a.description && (
               <p className="text-sm text-slate-500 line-clamp-2 mb-3">{a.description}</p>
             )}
-            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+
+            {/* Score section */}
+            {hasAttempted && a.best_percentage != null && (
+              <div className={`rounded-lg p-3 mb-3 ${passed ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 border border-red-200'}`}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className={`text-lg font-bold ${passed ? 'text-emerald-700' : 'text-red-700'}`}>
+                      {a.best_percentage}%
+                    </span>
+                    <span className="text-xs text-slate-500 ml-2">
+                      Best: {a.best_score}/{a.best_total} pts
+                    </span>
+                  </div>
+                  <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
+                    passed ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'
+                  }`}>
+                    {passed ? 'Passed' : 'Not Passed'}
+                  </span>
+                </div>
+              </div>
+            )}
+
+            {/* Info row */}
+            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400 mb-4">
               <span className="flex items-center gap-1">
                 <ClipboardCheck className="h-3.5 w-3.5" />
                 {qCount} question{qCount !== 1 ? 's' : ''}
@@ -471,14 +534,37 @@ function CourseAssessments({ courseId }: { courseId: string }) {
               )}
               <span className="flex items-center gap-1">
                 <RotateCcw className="h-3.5 w-3.5" />
-                {a.max_attempts} attempt{a.max_attempts !== 1 ? 's' : ''}
+                {a.attempts_used || 0}/{a.max_attempts} used
               </span>
               <span className="flex items-center gap-1">
                 <Target className="h-3.5 w-3.5" />
                 Pass: {a.passing_score}%
               </span>
             </div>
-          </Link>
+
+            {/* Action button */}
+            <Link
+              href={`/learner/assessments/${a.id}`}
+              className={`inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+                !canRetake
+                  ? 'bg-slate-100 text-slate-400 pointer-events-none'
+                  : hasAttempted
+                    ? 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100'
+                    : 'bg-teal-600 text-white hover:bg-teal-700'
+              }`}
+            >
+              {!canRetake ? (
+                'No attempts remaining'
+              ) : hasAttempted ? (
+                <>
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  Retake ({attemptsRemaining} left)
+                </>
+              ) : (
+                'Start Assessment'
+              )}
+            </Link>
+          </div>
         );
       })}
     </div>

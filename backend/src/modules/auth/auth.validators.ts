@@ -23,6 +23,11 @@ export const updateProfileSchema = z.object({
   avatar_url: z.string().url().optional().nullable(),
 });
 
+export const changePasswordSchema = z.object({
+  current_password: z.string().min(1, 'Current password is required'),
+  new_password: z.string().min(8, 'New password must be at least 8 characters'),
+});
+
 export const forgotPasswordSchema = z.object({
   email: z.string().email('Invalid email address'),
 });
@@ -31,4 +36,5 @@ export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 export type RefreshInput = z.infer<typeof refreshSchema>;
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
 export type ForgotPasswordInput = z.infer<typeof forgotPasswordSchema>;

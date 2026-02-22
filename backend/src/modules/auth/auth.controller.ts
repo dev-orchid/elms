@@ -105,6 +105,70 @@ export class AuthController {
     }
   }
 
+  async uploadAvatar(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file provided' });
+      }
+
+      const profile = await authService.uploadAvatar(req.user!.id, req.file);
+
+      await logAudit({
+        userId: req.user!.id,
+        action: 'upload_avatar',
+        resource: 'profiles',
+        resourceId: req.user!.id,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+      });
+
+      res.json({ user: profile });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async uploadBanner(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file provided' });
+      }
+
+      const profile = await authService.uploadBanner(req.user!.id, req.file);
+
+      await logAudit({
+        userId: req.user!.id,
+        action: 'upload_banner',
+        resource: 'profiles',
+        resourceId: req.user!.id,
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+      });
+
+      res.json({ user: profile });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async changePassword(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = await authService.changePassword(req.user!.id, req.user!.email, req.body);
+
+      await logAudit({
+        userId: req.user!.id,
+        action: 'change_password',
+        resource: 'auth',
+        ipAddress: req.ip,
+        userAgent: req.headers['user-agent'],
+      });
+
+      res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async forgotPassword(req: Request, res: Response, next: NextFunction) {
     try {
       const result = await authService.forgotPassword(req.body.email);

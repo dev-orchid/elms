@@ -230,6 +230,13 @@ export class AssessmentsController {
     } catch (err) { next(err); }
   }
 
+  async getMySubmissions(req: Request<{ assessmentId: string }>, res: Response, next: NextFunction) {
+    try {
+      const result = await assessmentsService.getMySubmissions(req.params.assessmentId, req.user!.id);
+      res.json(result);
+    } catch (err) { next(err); }
+  }
+
   // ─── Grading ──────────────────────────────────────────
 
   async listSubmissions(req: Request<{ assessmentId: string }>, res: Response, next: NextFunction) {

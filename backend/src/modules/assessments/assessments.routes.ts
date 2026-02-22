@@ -160,6 +160,14 @@ router.get(
   assessmentsController.getResults,
 );
 
+// Learner's own submissions for an assessment
+router.get(
+  '/assessments/:assessmentId/my-submissions',
+  authenticate,
+  validate({ params: assessmentIdParamSchema }),
+  assessmentsController.getMySubmissions,
+);
+
 // ─── Grading ──────────────────────────────────────────
 
 router.get(
