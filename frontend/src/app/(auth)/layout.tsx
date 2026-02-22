@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { BookOpen, Award, BarChart3, Users } from 'lucide-react';
+import { BookOpen, Award, GraduationCap, Lightbulb } from 'lucide-react';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -28,8 +28,8 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
           {/* Tagline */}
           <p className="text-slate-500 text-lg text-center leading-relaxed max-w-sm mb-6">
-            Manage courses, track progress, and
-            <br />empower learners at scale.
+            Tech, science, UPSC & exam prep —
+            <br />learn anything, achieve everything.
           </p>
 
           {/* Illustration */}
@@ -47,10 +47,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           {/* Feature list */}
           <div className="grid grid-cols-2 gap-x-6 gap-y-4 w-full max-w-md">
             {[
-              { icon: BookOpen, text: 'Course management' },
-              { icon: BarChart3, text: 'Analytics & insights' },
+              { icon: BookOpen, text: 'Tech & science courses' },
+              { icon: GraduationCap, text: 'UPSC & exam prep' },
               { icon: Award, text: 'Certificates & badges' },
-              { icon: Users, text: 'Multi-role teams' },
+              { icon: Lightbulb, text: 'Skill development' },
             ].map((feature) => (
               <div key={feature.text} className="flex items-center gap-3">
                 <div className="h-8 w-8 rounded-lg bg-teal-50 border border-teal-100 flex items-center justify-center shrink-0">
@@ -76,7 +76,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
               <h1 className="text-3xl font-bold text-slate-900 tracking-tight">
                 <span className="text-teal-600">ELMS</span>
               </h1>
-              <p className="text-sm text-slate-500 mt-1">Enterprise Learning Management System</p>
+              <p className="text-sm text-slate-500 mt-1">E-Learning Portal for Everyone</p>
             </Link>
           </div>
 

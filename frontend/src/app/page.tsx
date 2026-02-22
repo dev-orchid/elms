@@ -15,56 +15,56 @@ import {
 const features = [
   {
     icon: BookOpen,
-    title: 'Course Management',
-    desc: 'Create, organize, and deliver engaging courses with modules, lessons, and structured learning paths.',
+    title: 'Tech & Science Courses',
+    desc: 'From programming and data science to physics and biology — comprehensive courses across technology and science.',
     color: 'bg-blue-50 text-blue-600',
   },
   {
     icon: Users,
-    title: 'Role-Based Access',
-    desc: 'Learners, instructors, and admins each get tailored dashboards and permissions.',
+    title: 'Exam Preparation',
+    desc: 'Dedicated prep for UPSC, state civil services, SSC, and competitive exams with mock tests and study material.',
     color: 'bg-violet-50 text-violet-600',
   },
   {
     icon: Award,
     title: 'Certificates',
-    desc: 'Auto-generated certificates with unique verification codes and public validation pages.',
+    desc: 'Earn verifiable certificates upon course completion to showcase your skills and knowledge.',
     color: 'bg-amber-50 text-amber-600',
   },
   {
     icon: BarChart3,
-    title: 'Analytics & Insights',
-    desc: 'Track progress, grades, at-risk learners, and engagement with rich dashboards and charts.',
+    title: 'Track Your Progress',
+    desc: 'Monitor your learning journey with progress dashboards, completion tracking, and performance insights.',
     color: 'bg-emerald-50 text-emerald-600',
   },
   {
     icon: Shield,
-    title: 'Assessments & Grading',
-    desc: 'Quizzes, exams, and assignments with auto-grading, timed tests, and manual review workflows.',
+    title: 'Assessments & Quizzes',
+    desc: 'Test your knowledge with timed quizzes, mock exams, and assessments that reinforce your learning.',
     color: 'bg-red-50 text-red-600',
   },
   {
     icon: Zap,
-    title: 'Gamification',
-    desc: 'Points, badges, leaderboards, and daily streaks to drive engagement and completion rates.',
+    title: 'Gamification & Motivation',
+    desc: 'Stay motivated with points, badges, leaderboards, and daily streaks as you progress through courses.',
     color: 'bg-teal-50 text-teal-600',
   },
 ];
 
 const stats = [
-  { value: 'Unlimited', label: 'Courses', icon: BookOpen },
-  { value: 'Real-time', label: 'Collaboration', icon: Globe },
-  { value: 'Built-in', label: 'Certificates', icon: GraduationCap },
-  { value: 'Full', label: 'Analytics Suite', icon: BarChart3 },
+  { value: '100+', label: 'Courses', icon: BookOpen },
+  { value: 'UPSC & More', label: 'Exam Prep', icon: GraduationCap },
+  { value: 'Verified', label: 'Certificates', icon: Award },
+  { value: 'Self-paced', label: 'Learning', icon: BarChart3 },
 ];
 
 const highlights = [
-  'Role-based dashboards for learners, instructors, and admins',
-  'Course bundles and sequential learning paths',
-  'Discussion forums and direct messaging',
-  'Real-time notifications and live updates',
-  'Audit logging and CSV export',
-  'Mobile-responsive design',
+  'UPSC, state PSC, SSC & competitive exam preparation',
+  'Technology courses — programming, AI, data science & more',
+  'Science, maths, and academic subject courses',
+  'Mock tests and timed practice exams',
+  'Discussion forums and peer study groups',
+  'Mobile-friendly — learn from any device, anywhere',
 ];
 
 export default function HomePage() {
@@ -107,22 +107,22 @@ export default function HomePage() {
           <div className="max-w-3xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-xs font-medium text-teal-700 mb-6">
               <span className="h-1.5 w-1.5 rounded-full bg-teal-500 animate-pulse" />
-              Enterprise-grade LMS
+              E-Learning Portal
             </div>
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-slate-900 leading-[1.1] tracking-tight">
-              The modern platform for{' '}
-              <span className="text-teal-600">enterprise learning</span>
+              Learn tech, science &{' '}
+              <span className="text-teal-600">crack any exam</span>
             </h1>
             <p className="mt-6 text-lg sm:text-xl text-slate-600 leading-relaxed max-w-2xl">
-              A complete learning management system with role-based course management,
-              assessments, certificates, gamification, and real-time collaboration — built for organizations that value education.
+              A comprehensive e-learning portal with courses in technology, science, and competitive exam preparation
+              — including UPSC, state civil services, and more. Assessments, certificates, and everything you need to succeed.
             </p>
             <div className="mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <Link
                 href="/register"
                 className="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-lg shadow-teal-600/20 transition-all hover:shadow-xl hover:shadow-teal-600/30"
               >
-                Start for free
+                Start learning for free
                 <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
@@ -158,10 +158,10 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">
-              Everything you need to manage learning
+              Everything you need to learn and succeed
             </h2>
             <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
-              From course creation to certification — a complete toolkit for modern education.
+              From tech courses to UPSC prep — a complete learning platform with courses, mock tests, and certifications.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -189,11 +189,11 @@ export default function HomePage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">
-                Built for teams that take learning seriously
+                Built for learners who aim high
               </h2>
               <p className="mt-4 text-lg text-slate-600 leading-relaxed">
-                Whether you're onboarding new employees, running certification programs, or managing
-                a full training operation — ELMS has the tools you need.
+                Whether you&apos;re preparing for UPSC, learning programming, or studying science
+                — ELMS gives you the courses, practice tests, and tools to achieve your goals.
               </p>
             </div>
             <div className="space-y-3">
@@ -212,17 +212,17 @@ export default function HomePage() {
       <section className="py-20 sm:py-28 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">
-            Ready to transform your training?
+            Ready to start your learning journey?
           </h2>
           <p className="mt-4 text-lg text-slate-600">
-            Create your free account and start building courses in minutes.
+            Join thousands of learners preparing for exams, building tech skills, and achieving their goals.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/register"
               className="inline-flex items-center gap-2 px-8 py-3.5 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg shadow-lg shadow-teal-600/20 transition-all"
             >
-              Get started for free
+              Start learning for free
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -245,7 +245,7 @@ export default function HomePage() {
               <Link href="/verify" className="hover:text-slate-700 transition-colors">Verify Certificate</Link>
             </div>
             <p className="text-xs text-slate-400">
-              Enterprise Learning Management System
+              E-Learning Portal — Tech, Science & Exam Prep
             </p>
           </div>
         </div>
