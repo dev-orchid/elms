@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   GraduationCap,
   BookOpen,
@@ -28,27 +29,31 @@ import {
   UserPlus,
   Search,
   BadgeCheck,
+  Palette,
+  Sprout,
+  Languages,
 } from 'lucide-react';
 
 /* ─── Static Data ─────────────────────────────────────────────────── */
 
-const examBadges = [
-  'UPSC', 'SSC', 'State PSC', 'Banking', 'JEE', 'NEET', 'GATE', 'CAT',
+const skillBadges = [
+  'Digital Marketing', 'Web Development', 'Data Science', 'Creative Arts',
+  'Business', 'Kiswahili', 'Education', 'Agriculture',
 ];
 
 const categories = [
-  { icon: Landmark, title: 'UPSC Civil Services', courses: 24 },
-  { icon: Globe, title: 'State PSC', courses: 18 },
-  { icon: BriefcaseBusiness, title: 'SSC & Banking', courses: 22 },
-  { icon: Shield, title: 'GATE & ESE', courses: 15 },
-  { icon: FlaskConical, title: 'JEE & NEET', courses: 20 },
-  { icon: Cpu, title: 'Technology & Programming', courses: 30 },
-  { icon: Brain, title: 'Data Science & AI', courses: 16 },
-  { icon: Atom, title: 'Science & Mathematics', courses: 14 },
+  { icon: Globe, title: 'Digital Marketing & Social Media', courses: 24 },
+  { icon: Cpu, title: 'Web Development & Design', courses: 22 },
+  { icon: Brain, title: 'Data Science & AI', courses: 18 },
+  { icon: BriefcaseBusiness, title: 'Business & Entrepreneurship', courses: 20 },
+  { icon: Landmark, title: 'Humanities & Social Studies', courses: 16 },
+  { icon: Languages, title: 'Kiswahili & Languages', courses: 14 },
+  { icon: Sprout, title: 'Agriculture & Environment', courses: 15 },
+  { icon: Palette, title: 'Creative Arts & Media', courses: 12 },
 ];
 
 const platformStats = [
-  { icon: BookOpen, value: '100+', label: 'Courses', desc: 'Across tech, science & exam prep' },
+  { icon: BookOpen, value: '100+', label: 'Courses', desc: 'Across digital skills, humanities & more' },
   { icon: Users, value: '50+', label: 'Expert Educators', desc: 'Industry & academic professionals' },
   { icon: Target, value: '10,000+', label: 'Active Learners', desc: 'Growing community every day' },
   { icon: Trophy, value: '95%', label: 'Success Rate', desc: 'Learners who meet their goals' },
@@ -65,8 +70,8 @@ const featureShowcase = [
   {
     icon: FileText,
     title: 'Assessments & Mock Tests',
-    desc: 'Timed practice tests, quizzes, and full-length mock exams with instant auto-grading. Identify your strengths and weaknesses before the real exam.',
-    bullets: ['Timed exam simulation', 'Auto-graded answers', 'Detailed analytics'],
+    desc: 'Timed practice tests, quizzes, and comprehensive assessments with instant auto-grading. Identify your strengths and weaknesses to guide your learning.',
+    bullets: ['Timed assessments', 'Auto-graded answers', 'Detailed analytics'],
     mockType: 'quiz' as const,
   },
   {
@@ -80,43 +85,43 @@ const featureShowcase = [
 
 const steps = [
   { icon: UserPlus, title: 'Sign up for free', desc: 'Create your account in seconds — no credit card required.' },
-  { icon: Search, title: 'Choose your course or exam', desc: 'Browse our catalog and pick the goal that matches your ambition.' },
+  { icon: Search, title: 'Choose your course', desc: 'Browse our catalog and pick the skill that matches your ambition.' },
   { icon: BadgeCheck, title: 'Learn, practice & get certified', desc: 'Complete courses, ace assessments, and earn certificates to prove your skills.' },
 ];
 
 const testimonials = [
   {
-    name: 'Priya Sharma',
-    goal: 'UPSC Aspirant',
-    quote: 'ELMS transformed how I study. The structured courses and mock tests gave me a clear roadmap. I cleared my prelims on the first attempt!',
+    name: 'Amina Wanjiku',
+    goal: 'Digital Marketer',
+    quote: 'ELMS transformed my career. The digital marketing courses gave me hands-on skills I use every day. I now run campaigns for three Nairobi-based businesses!',
     stars: 5,
   },
   {
-    name: 'Rahul Deshpande',
+    name: 'Brian Ochieng',
     goal: 'Software Developer',
-    quote: 'The programming courses here are top-notch. I went from basic Python to building full-stack apps. The certificates helped me land my dream job.',
+    quote: 'The programming courses here are top-notch. I went from basic Python to building full-stack apps. The certificates helped me land my dream job in tech.',
     stars: 5,
   },
   {
-    name: 'Ananya Reddy',
-    goal: 'JEE Aspirant',
-    quote: 'Timed mock tests and auto-grading saved me months of guesswork. I could see exactly where I stood and what to focus on. Absolutely recommend!',
+    name: 'Faith Muthoni',
+    goal: 'Humanities Student',
+    quote: 'The Kiswahili and humanities courses are so well structured. The assessments helped me track my progress and the certificates boosted my portfolio. Highly recommend!',
     stars: 5,
   },
 ];
 
 const footerPlatform = ['Courses', 'Assessments', 'Certificates', 'Leaderboard'];
-const footerExam = ['UPSC', 'State PSC', 'SSC', 'Banking', 'JEE / NEET', 'GATE'];
+const footerSkills = ['Digital Marketing', 'Web Development', 'Data Science', 'Business', 'Humanities', 'Agriculture'];
 const footerCompany = ['About Us', 'Careers', 'Blog', 'Contact', 'Privacy Policy', 'Terms of Service'];
 
 /* ─── Floating Badge Positions (hero illustration) ─────────────── */
 const floatingBadges = [
-  { label: 'UPSC', top: '8%', left: '10%', delay: '0s' },
-  { label: 'JEE', top: '18%', right: '8%', delay: '0.5s' },
-  { label: 'SSC', top: '45%', left: '5%', delay: '1s' },
-  { label: 'NEET', top: '55%', right: '12%', delay: '1.5s' },
-  { label: 'GATE', top: '78%', left: '15%', delay: '0.8s' },
-  { label: 'CAT', top: '72%', right: '5%', delay: '1.2s' },
+  { label: 'Digital Skills', top: '8%', left: '5%', delay: '0s' },
+  { label: 'Web Dev', top: '18%', right: '8%', delay: '0.5s' },
+  { label: 'Business', top: '45%', left: '5%', delay: '1s' },
+  { label: 'Kiswahili', top: '55%', right: '8%', delay: '1.5s' },
+  { label: 'Agriculture', top: '78%', left: '10%', delay: '0.8s' },
+  { label: 'Data Science', top: '72%', right: '2%', delay: '1.2s' },
 ];
 
 /* ─── Page Component ──────────────────────────────────────────── */
@@ -150,7 +155,7 @@ export default function HomePage() {
 
           <nav className="hidden md:flex items-center gap-8">
             <a href="#categories" className="text-sm font-medium text-slate-600 hover:text-teal-600 transition-colors">Courses</a>
-            <a href="#exam-prep" className="text-sm font-medium text-slate-600 hover:text-teal-600 transition-colors">Exam Prep</a>
+            <a href="#skills" className="text-sm font-medium text-slate-600 hover:text-teal-600 transition-colors">Skills</a>
             <a href="#features" className="text-sm font-medium text-slate-600 hover:text-teal-600 transition-colors">Features</a>
           </nav>
 
@@ -181,15 +186,15 @@ export default function HomePage() {
             {/* Left column */}
             <div>
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-[1.08] tracking-tight">
-                Learn, prepare &<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-teal-500">crack any exam</span>
+                Learn, grow &<br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-teal-500">build your future</span>
               </h1>
 
               <div className="mt-6 flex items-center gap-3">
                 <div className="flex -space-x-2">
                   {[0, 1, 2, 3].map((i) => (
                     <div key={i} className="h-8 w-8 rounded-full border-2 border-white bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-[10px] font-bold text-white">
-                      {['PS', 'RD', 'AR', 'VK'][i]}
+                      {['AW', 'BO', 'FM', 'JK'][i]}
                     </div>
                   ))}
                 </div>
@@ -199,7 +204,7 @@ export default function HomePage() {
               </div>
 
               <p className="mt-5 text-lg text-slate-600 leading-relaxed max-w-xl">
-                Comprehensive courses in technology, science, UPSC, state civil services, SSC, and competitive exams — with assessments, certificates, and everything you need to succeed.
+                Comprehensive courses in digital skills, humanities, business, agriculture, and more — with assessments, certificates, and everything you need to succeed in Kenya and beyond.
               </p>
 
               <div className="mt-8 flex flex-col sm:flex-row items-start gap-4">
@@ -217,13 +222,19 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Right column — decorative card with floating badges */}
+            {/* Right column — Kenya image with floating badges */}
             <div className="hidden lg:block relative">
               <div className="relative w-full h-[420px]">
-                {/* Main gradient card */}
-                <div className="absolute inset-4 rounded-3xl bg-gradient-to-br from-teal-600 via-teal-500 to-cyan-500 shadow-2xl shadow-teal-600/30 overflow-hidden">
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.15),transparent_50%)]" />
-                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(255,255,255,0.1),transparent_50%)]" />
+                {/* Main image card */}
+                <div className="absolute inset-4 rounded-3xl shadow-2xl shadow-teal-600/30 overflow-hidden">
+                  <Image
+                    src="https://images.unsplash.com/photo-1611348524140-53c9a25263d6?w=700&h=500&fit=crop&q=80"
+                    alt="Nairobi, Kenya"
+                    fill
+                    className="object-cover"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-teal-900/70 via-teal-800/20 to-transparent" />
                   <div className="absolute bottom-8 left-8 right-8">
                     <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-white/20">
                       <div className="flex items-center gap-3 mb-3">
@@ -243,7 +254,7 @@ export default function HomePage() {
                   </div>
                 </div>
 
-                {/* Floating exam badges */}
+                {/* Floating skill badges */}
                 {floatingBadges.map((b) => (
                   <div
                     key={b.label}
@@ -264,14 +275,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── 3. Trusted-By / Exam Badge Strip ─────────────────── */}
-      <section id="exam-prep" className="bg-slate-50 border-y border-slate-200/60">
+      {/* ─── 3. Trusted-By / Skill Badge Strip ─────────────────── */}
+      <section id="skills" className="bg-slate-50 border-y border-slate-200/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <p className="text-center text-sm font-medium text-slate-500 mb-5">
-            Trusted by learners preparing for
+            Trusted by learners building skills in
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            {examBadges.map((badge) => (
+            {skillBadges.map((badge) => (
               <span
                 key={badge}
                 className="px-5 py-2 rounded-full bg-white border border-slate-200 text-sm font-medium text-slate-600 shadow-sm"
@@ -291,7 +302,7 @@ export default function HomePage() {
               Choose your goal
             </h2>
             <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
-              Whether it&apos;s cracking a competitive exam or mastering a new skill — pick your path and start learning today.
+              Whether it&apos;s mastering digital skills, exploring humanities, or growing your career — pick your path and start learning today.
             </p>
           </div>
 
@@ -426,7 +437,7 @@ export default function HomePage() {
               What learners say
             </h2>
             <p className="mt-4 text-lg text-slate-600 max-w-2xl mx-auto">
-              Hear from students who have transformed their preparation and career with ELMS.
+              Hear from learners who have transformed their skills and career with ELMS.
             </p>
           </div>
 
@@ -466,7 +477,7 @@ export default function HomePage() {
             Start your learning journey today
           </h2>
           <p className="mt-4 text-lg text-teal-100 max-w-xl mx-auto">
-            Join thousands of learners preparing for exams, building tech skills, and achieving their goals on ELMS.
+            Join thousands of learners across Kenya building digital skills, exploring humanities, and achieving their goals on ELMS.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
@@ -499,7 +510,7 @@ export default function HomePage() {
                 <span className="text-lg font-bold text-white">ELMS</span>
               </div>
               <p className="text-sm leading-relaxed mb-6">
-                E-Learning Portal for Tech, Science & Exam Preparation. Quality education, accessible to all.
+                E-Learning Portal for Digital Skills, Humanities & Professional Growth. Quality education, accessible to all Kenyans.
               </p>
               <div className="flex items-center gap-3">
                 {['T', 'L', 'Y'].map((letter) => (
@@ -522,11 +533,11 @@ export default function HomePage() {
               </ul>
             </div>
 
-            {/* Col 3: Exam Prep */}
+            {/* Col 3: Skills */}
             <div>
-              <h4 className="text-sm font-semibold text-white mb-4">Exam Prep</h4>
+              <h4 className="text-sm font-semibold text-white mb-4">Skills</h4>
               <ul className="space-y-3">
-                {footerExam.map((item) => (
+                {footerSkills.map((item) => (
                   <li key={item}>
                     <Link href="/register" className="text-sm hover:text-white transition-colors">{item}</Link>
                   </li>
@@ -552,7 +563,7 @@ export default function HomePage() {
             <p className="text-xs text-slate-500">&copy; 2026 ELMS. All rights reserved.</p>
             <div className="flex items-center gap-2 text-xs text-slate-500">
               <span className="inline-block h-2 w-2 rounded-full bg-teal-500" />
-              Made in India
+              Built for Kenya
             </div>
           </div>
         </div>
@@ -605,8 +616,8 @@ function MockQuizCard() {
               <FileText className="h-5 w-5 text-blue-600" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-900">UPSC Prelims Mock #3</p>
-              <p className="text-xs text-slate-500">100 questions &middot; 120 min</p>
+              <p className="text-sm font-semibold text-slate-900">Digital Marketing Quiz #3</p>
+              <p className="text-xs text-slate-500">30 questions &middot; 45 min</p>
             </div>
           </div>
           <div className="flex items-center gap-1.5 text-xs font-medium text-amber-600 bg-amber-50 px-2.5 py-1 rounded-full">
@@ -616,9 +627,9 @@ function MockQuizCard() {
         </div>
         <div className="space-y-3 mb-4">
           <div className="p-3 rounded-lg bg-slate-50 border border-slate-100">
-            <p className="text-xs text-slate-700 mb-2">Q12. The Indus Valley Civilization was primarily located in:</p>
+            <p className="text-xs text-slate-700 mb-2">Q12. Which social media metric best measures audience engagement?</p>
             <div className="grid grid-cols-2 gap-2">
-              {['Punjab region', 'Gangetic plain', 'Deccan plateau', 'Western Ghats'].map((opt, i) => (
+              {['Click-through rate', 'Impressions', 'Reach', 'Page views'].map((opt, i) => (
                 <div key={opt} className={`text-[11px] px-2.5 py-1.5 rounded-md border ${i === 0 ? 'border-teal-300 bg-teal-50 text-teal-700' : 'border-slate-200 text-slate-600'}`}>
                   {opt}
                 </div>
@@ -627,9 +638,9 @@ function MockQuizCard() {
           </div>
         </div>
         <div className="flex items-center justify-between text-xs text-slate-500">
-          <span>12 of 100 answered</span>
+          <span>12 of 30 answered</span>
           <div className="w-20 bg-slate-100 rounded-full h-1.5">
-            <div className="bg-teal-500 rounded-full h-1.5 w-[12%]" />
+            <div className="bg-teal-500 rounded-full h-1.5 w-[40%]" />
           </div>
         </div>
       </div>
@@ -648,7 +659,7 @@ function MockCertificateCard() {
           </div>
           <p className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Certificate of Completion</p>
           <p className="text-lg font-bold text-slate-900">Python Masterclass</p>
-          <p className="text-sm text-slate-600 mt-1">Priya Sharma</p>
+          <p className="text-sm text-slate-600 mt-1">Amina Wanjiku</p>
           <div className="flex items-center justify-center gap-4 mt-4 text-xs text-slate-500">
             <span>Issued: Jan 2026</span>
             <span className="h-3 w-px bg-slate-200" />

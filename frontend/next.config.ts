@@ -7,6 +7,11 @@ config({ path: resolve(__dirname, '../.env') });
 
 const nextConfig: NextConfig = {
   transpilePackages: ['shared'],
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'images.unsplash.com' },
+    ],
+  },
   env: {
     NEXT_PUBLIC_API_URL: process.env.API_URL,
     NEXT_PUBLIC_SUPABASE_URL: process.env.SUPABASE_URL,

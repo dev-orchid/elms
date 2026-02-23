@@ -28,7 +28,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 
           {/* Tagline */}
           <p className="text-slate-500 text-lg text-center leading-relaxed max-w-sm mb-6">
-            Tech, science, UPSC & exam prep —
+            Digital skills, humanities & professional growth —
             <br />learn anything, achieve everything.
           </p>
 
@@ -47,10 +47,10 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           {/* Feature list */}
           <div className="grid grid-cols-2 gap-x-6 gap-y-4 w-full max-w-md">
             {[
-              { icon: BookOpen, text: 'Tech & science courses' },
-              { icon: GraduationCap, text: 'UPSC & exam prep' },
+              { icon: BookOpen, text: 'Digital skills courses' },
+              { icon: GraduationCap, text: 'Humanities & languages' },
               { icon: Award, text: 'Certificates & badges' },
-              { icon: Lightbulb, text: 'Skill development' },
+              { icon: Lightbulb, text: 'Professional growth' },
             ].map((feature) => (
               <div key={feature.text} className="flex items-center gap-3">
                 <div className="h-8 w-8 rounded-lg bg-teal-50 border border-teal-100 flex items-center justify-center shrink-0">
