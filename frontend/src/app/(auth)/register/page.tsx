@@ -5,9 +5,18 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod/v3';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { Eye, EyeOff, BookOpen, GraduationCap, Users } from 'lucide-react';
 import api from '@/lib/api';
+
+const VALID_ROLES = ['learner', 'instructor', 'partner'] as const;
+type SignupRole = (typeof VALID_ROLES)[number];
+
+const ROLE_META: Record<SignupRole, { label: string; icon: typeof BookOpen; color: string; bg: string }> = {
+  learner: { label: 'Learner', icon: BookOpen, color: 'text-teal-700', bg: 'bg-teal-50 border-teal-200' },
+  instructor: { label: 'Educator', icon: GraduationCap, color: 'text-amber-700', bg: 'bg-amber-50 border-amber-200' },
+  partner: { label: 'Organization', icon: Users, color: 'text-sky-700', bg: 'bg-sky-50 border-sky-200' },
+};
 
 const registerSchema = z.object({
   first_name: z.string().min(1, 'First name is required').max(100),
@@ -24,9 +33,16 @@ type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  // Read role from ?role= query param, default to learner
+  const rawRole = searchParams.get('role');
+  const role: SignupRole = VALID_ROLES.includes(rawRole as SignupRole) ? (rawRole as SignupRole) : 'learner';
+  const roleMeta = ROLE_META[role];
+  const RoleIcon = roleMeta.icon;
 
   const {
     register,
@@ -44,6 +60,7 @@ export default function RegisterPage() {
         last_name: data.last_name,
         email: data.email,
         password: data.password,
+        role,
       });
       setSuccess(true);
       setTimeout(() => router.push('/login'), 2000);
@@ -77,7 +94,38 @@ export default function RegisterPage() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold text-slate-900 text-center mb-8">Create your account</h2>
+      <h2 className="text-2xl font-bold text-slate-900 text-center mb-2">Create your account</h2>
+
+      {/* Role badge */}
+      <div className="flex justify-center mb-6">
+        <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-sm font-semibold ${roleMeta.bg} ${roleMeta.color}`}>
+          <RoleIcon className="h-4 w-4" />
+          Signing up as {roleMeta.label}
+        </span>
+      </div>
+
+      {/* Role switcher */}
+      <div className="flex items-center justify-center gap-1 mb-6">
+        {VALID_ROLES.map((r) => {
+          const meta = ROLE_META[r];
+          const Icon = meta.icon;
+          const isActive = r === role;
+          return (
+            <Link
+              key={r}
+              href={`/register?role=${r}`}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                isActive
+                  ? 'bg-teal-600 text-white'
+                  : 'text-slate-500 hover:text-slate-700 hover:bg-slate-100'
+              }`}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {meta.label}
+            </Link>
+          );
+        })}
+      </div>
 
       {error && (
         <div className="mb-5 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm text-center">

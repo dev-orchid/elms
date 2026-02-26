@@ -135,7 +135,7 @@ router.get(
 router.post(
   '/announcements',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ body: createAnnouncementSchema }),
   communicationController.createAnnouncement,
 );

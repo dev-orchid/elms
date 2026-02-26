@@ -109,7 +109,7 @@ export default function EditCoursePage() {
   }
 
   const course = data;
-  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const isAdmin = user?.role === 'admin';
 
   return (
     <div className="space-y-6">

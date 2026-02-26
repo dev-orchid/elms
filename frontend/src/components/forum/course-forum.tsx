@@ -51,7 +51,7 @@ export function CourseForum({ courseId }: CourseForumProps) {
   const [newContent, setNewContent] = useState('');
   const [replyContent, setReplyContent] = useState('');
   const [hasNewReplies, setHasNewReplies] = useState(false);
-  const isInstructor = user?.role === 'instructor' || user?.role === 'admin' || user?.role === 'super_admin';
+  const isInstructor = user?.role === 'instructor' || user?.role === 'admin';
 
   // Realtime: forum_posts INSERT → show "New replies" indicator
   useRealtimeTable<{ id: string; created_by: string; thread_id: string }>({

@@ -26,7 +26,7 @@ const router = Router();
 router.get(
   '/admin/dashboard',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   adminController.getDashboardStats,
 );
 
@@ -35,7 +35,7 @@ router.get(
 router.get(
   '/instructor/stats',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   adminController.getInstructorStats,
 );
 
@@ -44,7 +44,7 @@ router.get(
 router.get(
   '/admin/users',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   validate({ query: usersQuerySchema }),
   adminController.listUsers,
 );
@@ -52,7 +52,7 @@ router.get(
 router.patch(
   '/admin/users/:userId/role',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   validate({ params: userIdParamSchema, body: updateUserRoleSchema }),
   adminController.updateUserRole,
 );
@@ -60,7 +60,7 @@ router.patch(
 router.patch(
   '/admin/users/:userId/status',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   validate({ params: userIdParamSchema, body: updateUserStatusSchema }),
   adminController.updateUserStatus,
 );
@@ -70,7 +70,7 @@ router.patch(
 router.get(
   '/admin/bundles',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   validate({ query: bundlesQuerySchema }),
   adminController.listBundles,
 );
@@ -78,7 +78,7 @@ router.get(
 router.post(
   '/admin/bundles',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   validate({ body: createBundleSchema }),
   adminController.createBundle,
 );
@@ -86,7 +86,7 @@ router.post(
 router.patch(
   '/admin/bundles/:bundleId',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   validate({ params: bundleIdParamSchema, body: updateBundleSchema }),
   adminController.updateBundle,
 );
@@ -94,7 +94,7 @@ router.patch(
 router.delete(
   '/admin/bundles/:bundleId',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   validate({ params: bundleIdParamSchema }),
   adminController.deleteBundle,
 );
@@ -102,7 +102,7 @@ router.delete(
 router.put(
   '/admin/bundles/:bundleId/courses',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   validate({ params: bundleIdParamSchema, body: manageBundleCoursesSchema }),
   adminController.manageBundleCourses,
 );
@@ -112,7 +112,7 @@ router.put(
 router.get(
   '/admin/audit-logs',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   validate({ query: auditLogsQuerySchema }),
   adminController.listAuditLogs,
 );
@@ -120,7 +120,7 @@ router.get(
 router.get(
   '/admin/audit-logs/export',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   validate({ query: auditLogsQuerySchema }),
   adminController.exportAuditLogs,
 );
@@ -130,14 +130,14 @@ router.get(
 router.get(
   '/admin/integrations',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   adminController.listIntegrations,
 );
 
 router.patch(
   '/admin/integrations/:integrationId',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   validate({ params: integrationIdParamSchema, body: updateIntegrationSchema }),
   adminController.updateIntegration,
 );
@@ -147,7 +147,7 @@ router.patch(
 router.get(
   '/instructor/analytics/:courseId',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ params: courseAnalyticsParamSchema }),
   adminController.getCourseAnalytics,
 );

@@ -256,7 +256,7 @@ export default function HomePage() {
                 {/* Role selector cards */}
                 <div className="space-y-4">
                   <Link
-                    href="/register"
+                    href="/register?role=learner"
                     className="group flex items-center gap-4 p-4 rounded-xl border-2 border-teal-200 bg-teal-50/50 hover:border-teal-400 hover:bg-teal-50 transition-all"
                   >
                     <div className="h-12 w-12 rounded-xl bg-teal-100 flex items-center justify-center shrink-0 group-hover:bg-teal-200 transition-colors">
@@ -270,7 +270,7 @@ export default function HomePage() {
                   </Link>
 
                   <Link
-                    href="/register"
+                    href="/register?role=instructor"
                     className="group flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-teal-300 hover:bg-teal-50/30 transition-all"
                   >
                     <div className="h-12 w-12 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 group-hover:bg-amber-200 transition-colors">
@@ -284,7 +284,7 @@ export default function HomePage() {
                   </Link>
 
                   <Link
-                    href="/register"
+                    href="/register?role=partner"
                     className="group flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-teal-300 hover:bg-teal-50/30 transition-all"
                   >
                     <div className="h-12 w-12 rounded-xl bg-sky-100 flex items-center justify-center shrink-0 group-hover:bg-sky-200 transition-colors">

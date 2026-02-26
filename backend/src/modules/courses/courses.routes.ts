@@ -43,7 +43,7 @@ router.get(
 router.post(
   '/',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ body: createCourseSchema }),
   coursesController.create,
 );
@@ -68,7 +68,7 @@ router.post(
 router.post(
   '/:id/archive',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   validate({ params: courseIdParamSchema }),
   coursesController.archive,
 );
@@ -77,7 +77,7 @@ router.post(
 router.delete(
   '/:id',
   authenticate,
-  requireRole('admin', 'super_admin'),
+  requireRole('admin'),
   validate({ params: courseIdParamSchema }),
   coursesController.softDelete,
 );

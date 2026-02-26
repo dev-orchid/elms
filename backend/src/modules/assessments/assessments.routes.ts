@@ -28,7 +28,7 @@ const router = Router();
 router.get(
   '/questions',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ query: questionQuerySchema }),
   assessmentsController.listQuestions,
 );
@@ -36,7 +36,7 @@ router.get(
 router.post(
   '/questions',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ body: createQuestionSchema }),
   assessmentsController.createQuestion,
 );
@@ -44,7 +44,7 @@ router.post(
 router.patch(
   '/questions/:questionId',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ params: questionIdParamSchema, body: updateQuestionSchema }),
   assessmentsController.updateQuestion,
 );
@@ -52,7 +52,7 @@ router.patch(
 router.delete(
   '/questions/:questionId',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ params: questionIdParamSchema }),
   assessmentsController.deleteQuestion,
 );
@@ -60,7 +60,7 @@ router.delete(
 router.post(
   '/questions/bulk-delete',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ body: bulkDeleteQuestionsSchema }),
   assessmentsController.bulkDeleteQuestions,
 );
@@ -84,7 +84,7 @@ router.get(
 router.post(
   '/assessments',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ body: createAssessmentSchema }),
   assessmentsController.createAssessment,
 );
@@ -92,7 +92,7 @@ router.post(
 router.patch(
   '/assessments/:assessmentId',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ params: assessmentIdParamSchema, body: updateAssessmentSchema }),
   assessmentsController.updateAssessment,
 );
@@ -100,7 +100,7 @@ router.patch(
 router.delete(
   '/assessments/:assessmentId',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ params: assessmentIdParamSchema }),
   assessmentsController.deleteAssessment,
 );
@@ -109,7 +109,7 @@ router.delete(
 router.post(
   '/assessments/:assessmentId/questions',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ params: assessmentIdParamSchema, body: addQuestionsSchema }),
   assessmentsController.addQuestions,
 );
@@ -117,7 +117,7 @@ router.post(
 router.delete(
   '/assessments/:assessmentId/questions/:questionId',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ params: assessmentIdParamSchema.merge(questionIdParamSchema) }),
   assessmentsController.removeQuestion,
 );
@@ -125,7 +125,7 @@ router.delete(
 router.patch(
   '/assessments/:assessmentId/questions/reorder',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ params: assessmentIdParamSchema, body: reorderQuestionsSchema }),
   assessmentsController.reorderQuestions,
 );
@@ -173,7 +173,7 @@ router.get(
 router.get(
   '/assessments/:assessmentId/submissions',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ params: assessmentIdParamSchema, query: submissionsQuerySchema }),
   assessmentsController.listSubmissions,
 );
@@ -181,7 +181,7 @@ router.get(
 router.post(
   '/submissions/:submissionId/grade',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   validate({ params: submissionIdParamSchema, body: gradeSubmissionSchema }),
   assessmentsController.gradeSubmission,
 );

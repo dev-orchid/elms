@@ -22,13 +22,13 @@ interface UsersResponse {
   pagination: { page: number; limit: number; total: number; totalPages: number };
 }
 
-const ROLES = ['learner', 'instructor', 'admin', 'super_admin'] as const;
+const ROLES = ['learner', 'instructor', 'admin', 'partner'] as const;
 
 const ROLE_BADGE: Record<string, string> = {
   learner: 'bg-teal-100 text-teal-700',
   instructor: 'bg-violet-100 text-violet-700',
   admin: 'bg-amber-100 text-amber-700',
-  super_admin: 'bg-red-100 text-red-700',
+  partner: 'bg-sky-100 text-sky-700',
 };
 
 export default function ManageUsersPage() {

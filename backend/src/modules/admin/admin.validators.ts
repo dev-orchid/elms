@@ -6,7 +6,7 @@ export const usersQuerySchema = z.object({
   page: z.string().optional(),
   limit: z.string().optional(),
   search: z.string().optional(),
-  role: z.enum(['learner', 'instructor', 'admin', 'super_admin']).optional(),
+  role: z.enum(['learner', 'instructor', 'admin', 'partner']).optional(),
   is_active: z.enum(['true', 'false']).optional(),
 });
 
@@ -15,7 +15,7 @@ export const userIdParamSchema = z.object({
 });
 
 export const updateUserRoleSchema = z.object({
-  role: z.enum(['learner', 'instructor', 'admin', 'super_admin']),
+  role: z.enum(['learner', 'instructor', 'admin', 'partner']),
 });
 
 export const updateUserStatusSchema = z.object({

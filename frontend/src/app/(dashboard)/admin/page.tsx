@@ -43,10 +43,10 @@ const ROLE_COLORS: Record<string, string> = {
   learner: '#0d9488',
   instructor: '#8b5cf6',
   admin: '#f59e0b',
-  super_admin: '#ef4444',
+  partner: '#0ea5e9',
 };
 
-const PIE_COLORS = ['#0d9488', '#8b5cf6', '#f59e0b', '#ef4444'];
+const PIE_COLORS = ['#0d9488', '#8b5cf6', '#f59e0b', '#0ea5e9'];
 
 const quickActions = [
   { label: 'Manage Users', icon: UserPlus, href: '/admin/users', color: 'text-blue-600' },

@@ -440,7 +440,7 @@ export class AssessmentsService {
     const sub = await this.getSubmissionOrThrow(submissionId);
 
     // Only the owner or instructor/admin can view results
-    if (sub.user_id !== userId && userRole !== 'admin' && userRole !== 'super_admin') {
+    if (sub.user_id !== userId && userRole !== 'admin') {
       // Check if instructor has access to the assessment's course
       const assessment = await this.getAssessmentOrThrow(sub.assessment_id);
       await coursesService.assertCourseAccess(assessment.course_id, userId, userRole);

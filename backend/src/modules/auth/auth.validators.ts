@@ -5,6 +5,7 @@ export const registerSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
   first_name: z.string().min(1, 'First name is required').max(100),
   last_name: z.string().min(1, 'Last name is required').max(100),
+  role: z.enum(['learner', 'instructor', 'partner']).optional().default('learner'),
 });
 
 export const loginSchema = z.object({

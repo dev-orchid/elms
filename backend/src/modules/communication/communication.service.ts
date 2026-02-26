@@ -168,7 +168,7 @@ export class CommunicationService {
     }
 
     // Only instructors and admins can moderate
-    if (!['instructor', 'admin', 'super_admin'].includes(userRole)) {
+    if (!['instructor', 'admin'].includes(userRole)) {
       throw new ForbiddenError('Only instructors and admins can moderate threads');
     }
 
@@ -201,7 +201,7 @@ export class CommunicationService {
       throw new NotFoundError('Thread');
     }
 
-    if (thread.created_by !== userId && !['instructor', 'admin', 'super_admin'].includes(userRole)) {
+    if (thread.created_by !== userId && !['instructor', 'admin'].includes(userRole)) {
       throw new ForbiddenError('Not authorized to delete this thread');
     }
 
@@ -222,7 +222,7 @@ export class CommunicationService {
       throw new NotFoundError('Post');
     }
 
-    if (post.created_by !== userId && !['instructor', 'admin', 'super_admin'].includes(userRole)) {
+    if (post.created_by !== userId && !['instructor', 'admin'].includes(userRole)) {
       throw new ForbiddenError('Not authorized to delete this post');
     }
 
@@ -260,7 +260,7 @@ export class CommunicationService {
       .eq('id', userId)
       .single();
 
-    if (profile && ['admin', 'super_admin'].includes(profile.role)) return;
+    if (profile && ['admin'].includes(profile.role)) return;
 
     throw new ForbiddenError('You must be enrolled in this course to participate in the forum');
   }
@@ -556,7 +556,7 @@ export class CommunicationService {
       throw new NotFoundError('Announcement');
     }
 
-    if (ann.created_by !== userId && !['admin', 'super_admin'].includes(userRole)) {
+    if (ann.created_by !== userId && !['admin'].includes(userRole)) {
       throw new ForbiddenError('Not authorized');
     }
 

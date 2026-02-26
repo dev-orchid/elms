@@ -6,7 +6,7 @@ export enum UserRole {
   Learner = 'learner',
   Instructor = 'instructor',
   Admin = 'admin',
-  SuperAdmin = 'super_admin',
+  Partner = 'partner',
 }
 
 export enum CourseStatus {
@@ -386,6 +386,7 @@ export interface RegisterRequest {
   password: string;
   first_name: string;
   last_name: string;
+  role?: 'learner' | 'instructor' | 'partner';
 }
 
 export interface AuthResponse {

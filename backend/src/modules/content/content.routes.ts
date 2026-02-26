@@ -107,7 +107,7 @@ router.patch(
 router.post(
   '/upload',
   authenticate,
-  requireRole('instructor', 'admin', 'super_admin'),
+  requireRole('instructor', 'admin'),
   upload.single('file'),
   contentController.uploadFile,
 );

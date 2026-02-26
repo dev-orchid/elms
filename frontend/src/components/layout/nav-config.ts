@@ -52,10 +52,10 @@ export const adminNav: NavItem[] = [
 export function getNavForRole(role: string | null): NavItem[] {
   switch (role) {
     case 'admin':
-    case 'super_admin':
       return adminNav;
     case 'instructor':
       return instructorNav;
+    case 'partner':
     default:
       return learnerNav;
   }
@@ -64,10 +64,10 @@ export function getNavForRole(role: string | null): NavItem[] {
 export function getRoleHome(role: string | null): string {
   switch (role) {
     case 'admin':
-    case 'super_admin':
       return '/admin';
     case 'instructor':
       return '/instructor';
+    case 'partner':
     default:
       return '/learner';
   }

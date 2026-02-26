@@ -33,7 +33,7 @@ export class CoursesService {
         qb = qb.eq('status', 'published');
       }
     }
-    // Admins / super_admins see all non-deleted
+    // Admins see all non-deleted
 
     // Filters
     if (query.status) {
@@ -311,7 +311,7 @@ export class CoursesService {
   }
 
   async assertCourseAccess(courseId: string, userId: string, userRole: string) {
-    if (userRole === 'admin' || userRole === 'super_admin') {
+    if (userRole === 'admin') {
       return;
     }
 
