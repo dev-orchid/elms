@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   GraduationCap,
   BookOpen,
@@ -12,19 +11,13 @@ import {
   Target,
   Clock,
   CheckCircle2,
-  Play,
   Star,
   Trophy,
   FileText,
-  MessageSquare,
   Cpu,
-  Atom,
   Landmark,
   BriefcaseBusiness,
-  Calculator,
   Brain,
-  FlaskConical,
-  Shield,
   ChevronRight,
   UserPlus,
   Search,
@@ -32,6 +25,8 @@ import {
   Palette,
   Sprout,
   Languages,
+  ChevronDown,
+  type LucideIcon,
 } from 'lucide-react';
 
 /* ─── Static Data ─────────────────────────────────────────────────── */
@@ -50,6 +45,16 @@ const categories = [
   { icon: Languages, title: 'Kiswahili & Languages', courses: 14 },
   { icon: Sprout, title: 'Agriculture & Environment', courses: 15 },
   { icon: Palette, title: 'Creative Arts & Media', courses: 12 },
+];
+
+/* Hero subject icons — colorful floating badges in the illustration area */
+const heroSubjects: { icon: LucideIcon; label: string; bg: string; iconColor: string; top: string; left?: string; right?: string; delay: string }[] = [
+  { icon: Globe, label: 'Marketing', bg: 'bg-orange-400', iconColor: 'text-white', top: '5%', left: '2%', delay: '0s' },
+  { icon: Cpu, label: 'Web Dev', bg: 'bg-sky-400', iconColor: 'text-white', top: '8%', right: '5%', delay: '0.6s' },
+  { icon: Brain, label: 'Data & AI', bg: 'bg-violet-400', iconColor: 'text-white', top: '35%', left: '0%', delay: '1.2s' },
+  { icon: BriefcaseBusiness, label: 'Business', bg: 'bg-amber-400', iconColor: 'text-white', top: '40%', right: '0%', delay: '0.3s' },
+  { icon: Landmark, label: 'Humanities', bg: 'bg-rose-400', iconColor: 'text-white', top: '65%', left: '5%', delay: '0.9s' },
+  { icon: Sprout, label: 'Agriculture', bg: 'bg-emerald-400', iconColor: 'text-white', top: '70%', right: '2%', delay: '1.5s' },
 ];
 
 const platformStats = [
@@ -114,22 +119,12 @@ const footerPlatform = ['Courses', 'Assessments', 'Certificates', 'Leaderboard']
 const footerSkills = ['Digital Marketing', 'Web Development', 'Data Science', 'Business', 'Humanities', 'Agriculture'];
 const footerCompany = ['About Us', 'Careers', 'Blog', 'Contact', 'Privacy Policy', 'Terms of Service'];
 
-/* ─── Floating Badge Positions (hero illustration) ─────────────── */
-const floatingBadges = [
-  { label: 'Digital Skills', top: '8%', left: '5%', delay: '0s' },
-  { label: 'Web Dev', top: '18%', right: '8%', delay: '0.5s' },
-  { label: 'Business', top: '45%', left: '5%', delay: '1s' },
-  { label: 'Kiswahili', top: '55%', right: '8%', delay: '1.5s' },
-  { label: 'Agriculture', top: '78%', left: '10%', delay: '0.8s' },
-  { label: 'Data Science', top: '72%', right: '2%', delay: '1.2s' },
-];
-
 /* ─── Page Component ──────────────────────────────────────────── */
 
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
-      {/* Inline keyframes for floating animation */}
+      {/* Inline keyframes */}
       <style>{`
         @keyframes float {
           0%, 100% { transform: translateY(0px); }
@@ -143,134 +138,182 @@ export default function HomePage() {
         .animate-float-slow { animation: float-slow 4s ease-in-out infinite; }
       `}</style>
 
-      {/* ─── 1. Navbar (sticky glassmorphism) ─────────────────── */}
-      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-slate-200/60">
+      {/* ─── 1. Navbar ────────────────────────────────────────── */}
+      <header className="sticky top-0 z-50 bg-white border-b border-slate-200/60">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="h-9 w-9 rounded-xl bg-teal-600 flex items-center justify-center shadow-lg shadow-teal-600/20">
-              <GraduationCap className="h-5 w-5 text-white" />
+          {/* Left: Logo + Explore + Search */}
+          <div className="flex items-center gap-4">
+            <Link href="/" className="flex items-center gap-2">
+              <div className="h-9 w-9 rounded-lg bg-teal-600 flex items-center justify-center">
+                <GraduationCap className="h-5 w-5 text-white" />
+              </div>
+              <span className="text-xl font-extrabold text-slate-900 tracking-tight hidden sm:block">ELMS</span>
+            </Link>
+
+            <div className="hidden md:flex items-center gap-1">
+              <a href="#categories" className="flex items-center gap-1 px-3 py-1.5 text-sm font-semibold text-slate-700 hover:text-teal-700 transition-colors rounded-lg hover:bg-slate-50">
+                Explore
+                <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+              </a>
             </div>
-            <span className="text-xl font-bold text-slate-900 tracking-tight">ELMS</span>
-          </Link>
 
-          <nav className="hidden md:flex items-center gap-8">
-            <a href="#categories" className="text-sm font-medium text-slate-600 hover:text-teal-600 transition-colors">Courses</a>
-            <a href="#skills" className="text-sm font-medium text-slate-600 hover:text-teal-600 transition-colors">Skills</a>
-            <a href="#features" className="text-sm font-medium text-slate-600 hover:text-teal-600 transition-colors">Features</a>
-          </nav>
+            <div className="hidden lg:flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-2 w-64">
+              <Search className="h-4 w-4 text-slate-400 shrink-0" />
+              <span className="text-sm text-slate-400">Search courses...</span>
+            </div>
+          </div>
 
-          <div className="flex items-center gap-3">
+          {/* Right: Nav links + Auth */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <nav className="hidden md:flex items-center gap-1 mr-2">
+              <a href="#features" className="px-3 py-1.5 text-sm font-semibold text-slate-600 hover:text-teal-700 transition-colors rounded-lg hover:bg-slate-50">Features</a>
+              <a href="#skills" className="px-3 py-1.5 text-sm font-semibold text-slate-600 hover:text-teal-700 transition-colors rounded-lg hover:bg-slate-50">Skills</a>
+            </nav>
+
+            <div className="h-5 w-px bg-slate-200 hidden md:block" />
+
             <Link
               href="/login"
-              className="px-4 py-2 text-sm font-medium text-slate-700 hover:text-teal-600 transition-colors"
+              className="px-4 py-2 text-sm font-semibold text-slate-700 hover:text-teal-700 transition-colors"
             >
-              Sign in
+              Log in
             </Link>
             <Link
               href="/register"
-              className="px-5 py-2.5 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-all shadow-md shadow-teal-600/20 hover:shadow-lg hover:shadow-teal-600/30"
+              className="px-5 py-2 text-sm font-bold text-white bg-teal-600 hover:bg-teal-700 rounded-lg transition-colors"
             >
-              Get started free
+              Sign up
             </Link>
           </div>
         </div>
       </header>
 
       {/* ─── 2. Hero Section ──────────────────────────────────── */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-teal-50/20 to-white">
-        <div className="absolute top-20 right-0 w-[500px] h-[500px] bg-teal-100/30 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-100/20 rounded-full blur-3xl" />
+      <section className="relative bg-slate-50 overflow-hidden">
+        {/* Subtle background texture */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, #0d9488 1px, transparent 1px)', backgroundSize: '32px 32px' }} />
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 sm:py-28 lg:py-36">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
-            {/* Left column */}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-start">
+
+            {/* Left column — Headline + illustration area */}
             <div>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 leading-[1.08] tracking-tight">
-                Learn, grow &<br />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-teal-500">build your future</span>
+              <h1 className="text-4xl sm:text-5xl lg:text-[56px] font-extrabold text-slate-900 leading-[1.1] tracking-tight">
+                For every learner,{' '}
+                <span className="text-teal-600">every goal.</span>
+                <br />
+                <span className="text-slate-900">Real results.</span>
               </h1>
-
-              <div className="mt-6 flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  {[0, 1, 2, 3].map((i) => (
-                    <div key={i} className="h-8 w-8 rounded-full border-2 border-white bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-[10px] font-bold text-white">
-                      {['AW', 'BO', 'FM', 'JK'][i]}
-                    </div>
-                  ))}
-                </div>
-                <p className="text-sm text-slate-600">
-                  Join <span className="font-semibold text-slate-800">10,000+</span> learners already on ELMS
-                </p>
-              </div>
-
-              <p className="mt-5 text-lg text-slate-600 leading-relaxed max-w-xl">
-                Comprehensive courses in digital skills, humanities, business, agriculture, and more — with assessments, certificates, and everything you need to succeed in Kenya and beyond.
+              <p className="mt-5 text-lg text-slate-600 leading-relaxed max-w-lg">
+                We&apos;re a nonprofit with the mission to provide free, world-class education for anyone, anywhere.
               </p>
 
-              <div className="mt-8 flex flex-col sm:flex-row items-start gap-4">
-                <Link
-                  href="/register"
-                  className="inline-flex items-center gap-2 px-7 py-3.5 text-sm font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-lg shadow-teal-600/25 transition-all hover:shadow-xl hover:shadow-teal-600/30 hover:-translate-y-0.5"
-                >
-                  Explore courses
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-                <button className="inline-flex items-center gap-2 px-7 py-3.5 text-sm font-semibold text-slate-700 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl transition-all hover:border-slate-400">
-                  <Play className="h-4 w-4 text-teal-600" />
-                  Watch demo
-                </button>
-              </div>
-            </div>
-
-            {/* Right column — Kenya image with floating badges */}
-            <div className="hidden lg:block relative">
-              <div className="relative w-full h-[420px]">
-                {/* Main image card */}
-                <div className="absolute inset-4 rounded-3xl shadow-2xl shadow-teal-600/30 overflow-hidden">
-                  <Image
-                    src="https://images.unsplash.com/photo-1611348524140-53c9a25263d6?w=700&h=500&fit=crop&q=80"
-                    alt="Nairobi, Kenya"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-teal-900/70 via-teal-800/20 to-transparent" />
-                  <div className="absolute bottom-8 left-8 right-8">
-                    <div className="bg-white/15 backdrop-blur-md rounded-2xl p-5 border border-white/20">
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="h-10 w-10 rounded-xl bg-white/20 flex items-center justify-center">
-                          <GraduationCap className="h-5 w-5 text-white" />
-                        </div>
-                        <div>
-                          <p className="text-white font-semibold text-sm">Your learning journey</p>
-                          <p className="text-white/70 text-xs">3 courses in progress</p>
-                        </div>
-                      </div>
-                      <div className="w-full bg-white/20 rounded-full h-2">
-                        <div className="bg-white rounded-full h-2 w-3/5" />
-                      </div>
-                      <p className="text-white/80 text-xs mt-2">60% overall completion</p>
-                    </div>
-                  </div>
+              {/* Illustration area with floating subject badges */}
+              <div className="relative mt-10 h-[320px] sm:h-[360px] hidden sm:block">
+                {/* Central decorative shapes */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-64 h-64 rounded-full bg-teal-100/60" />
                 </div>
+                <div className="absolute top-8 left-16 w-40 h-40 rounded-full bg-amber-100/50" />
+                <div className="absolute bottom-4 right-12 w-32 h-32 rounded-full bg-sky-100/50" />
+                <div className="absolute bottom-16 left-8 w-24 h-24 rounded-full bg-rose-100/40" />
 
-                {/* Floating skill badges */}
-                {floatingBadges.map((b) => (
+                {/* Floating subject badges */}
+                {heroSubjects.map((s) => (
                   <div
-                    key={b.label}
-                    className="animate-float absolute px-4 py-2 bg-white rounded-xl shadow-lg shadow-slate-200/60 border border-slate-100 text-xs font-bold text-slate-700"
-                    style={{
-                      top: b.top,
-                      left: b.left,
-                      right: b.right,
-                      animationDelay: b.delay,
-                    } as React.CSSProperties}
+                    key={s.label}
+                    className="animate-float absolute flex items-center gap-2 px-4 py-2.5 bg-white rounded-xl shadow-md border border-slate-100"
+                    style={{ top: s.top, left: s.left, right: s.right, animationDelay: s.delay } as React.CSSProperties}
                   >
-                    {b.label}
+                    <div className={`h-8 w-8 rounded-lg ${s.bg} flex items-center justify-center`}>
+                      <s.icon className={`h-4 w-4 ${s.iconColor}`} />
+                    </div>
+                    <span className="text-sm font-bold text-slate-700">{s.label}</span>
                   </div>
                 ))}
+
+                {/* Decorative doodle-style lines (SVG) */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 500 360" fill="none">
+                  <path d="M80 180 Q150 120 220 180 Q290 240 360 180" stroke="#14b8a6" strokeWidth="2" strokeDasharray="6 4" opacity="0.3" />
+                  <path d="M120 280 Q200 220 280 260 Q340 290 400 250" stroke="#f59e0b" strokeWidth="2" strokeDasharray="6 4" opacity="0.25" />
+                  <circle cx="100" cy="100" r="4" fill="#14b8a6" opacity="0.3" />
+                  <circle cx="380" cy="140" r="5" fill="#f59e0b" opacity="0.3" />
+                  <circle cx="300" cy="300" r="3" fill="#ec4899" opacity="0.3" />
+                  {/* Small star shapes */}
+                  <path d="M420 80 l3 8 8 3 -8 3 -3 8 -3-8 -8-3 8-3z" fill="#14b8a6" opacity="0.25" />
+                  <path d="M60 250 l3 8 8 3 -8 3 -3 8 -3-8 -8-3 8-3z" fill="#f59e0b" opacity="0.25" />
+                </svg>
               </div>
             </div>
+
+            {/* Right column — "Start learning today" card */}
+            <div className="lg:pt-4">
+              <div className="bg-white rounded-2xl shadow-xl shadow-slate-200/50 border border-slate-200/60 p-8 sm:p-10">
+                <h2 className="text-2xl sm:text-[28px] font-extrabold text-slate-900 leading-tight mb-8">
+                  Start learning today
+                </h2>
+
+                {/* Role selector cards */}
+                <div className="space-y-4">
+                  <Link
+                    href="/register"
+                    className="group flex items-center gap-4 p-4 rounded-xl border-2 border-teal-200 bg-teal-50/50 hover:border-teal-400 hover:bg-teal-50 transition-all"
+                  >
+                    <div className="h-12 w-12 rounded-xl bg-teal-100 flex items-center justify-center shrink-0 group-hover:bg-teal-200 transition-colors">
+                      <BookOpen className="h-6 w-6 text-teal-700" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-base font-bold text-slate-900">Learners</p>
+                      <p className="text-sm text-slate-500">Explore courses, practice, and earn certificates</p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-teal-500 shrink-0 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+
+                  <Link
+                    href="/register"
+                    className="group flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-teal-300 hover:bg-teal-50/30 transition-all"
+                  >
+                    <div className="h-12 w-12 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 group-hover:bg-amber-200 transition-colors">
+                      <GraduationCap className="h-6 w-6 text-amber-700" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-base font-bold text-slate-900">Educators</p>
+                      <p className="text-sm text-slate-500">Create courses and assessments for your students</p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-slate-400 shrink-0 group-hover:translate-x-1 group-hover:text-teal-500 transition-all" />
+                  </Link>
+
+                  <Link
+                    href="/register"
+                    className="group flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-teal-300 hover:bg-teal-50/30 transition-all"
+                  >
+                    <div className="h-12 w-12 rounded-xl bg-sky-100 flex items-center justify-center shrink-0 group-hover:bg-sky-200 transition-colors">
+                      <Users className="h-6 w-6 text-sky-700" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-base font-bold text-slate-900">Organizations</p>
+                      <p className="text-sm text-slate-500">Train your team with structured learning paths</p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-slate-400 shrink-0 group-hover:translate-x-1 group-hover:text-teal-500 transition-all" />
+                  </Link>
+                </div>
+
+                {/* Learner count */}
+                <div className="mt-6 pt-6 border-t border-slate-100 flex items-center gap-3">
+                  <div className="flex -space-x-2">
+                    {['AW', 'BO', 'FM', 'JK'].map((initials) => (
+                      <div key={initials} className="h-7 w-7 rounded-full border-2 border-white bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-[9px] font-bold text-white">
+                        {initials}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-sm text-slate-500">
+                    Join <span className="font-semibold text-slate-700">10,000+</span> learners
+                  </p>
+                </div>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
